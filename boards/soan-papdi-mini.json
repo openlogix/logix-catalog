@@ -30,7 +30,7 @@
       "active": "low",
       "source": {
         "kind": "maker",
-        "ref": "The maker's reply to the Logix project, 2026-11-08: RGB LED red on 39, green on 40, blue on 41. Active low: pins 39, 40 and 41 are the iCE40 UltraPlus's RGB0-2 open-drain outputs (Lattice iCE40 UltraPlus datasheet), which can only sink current."
+        "ref": "The maker's replies to the Logix project, 2026-11-08: RGB LED red on 39, green on 40, blue on 41, active low (as pins 39-41, the iCE40 UltraPlus's open-drain RGB outputs, require)."
       }
     }
   }
