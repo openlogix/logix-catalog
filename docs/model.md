@@ -37,6 +37,8 @@ When a board has a variant that writes flash, the first variant writes flash.
 
 `resources` maps each name to a resource. The name is the port name a design uses, a Verilog identifier, so it's unique on the board. One pin gives a plain port and several a vector, bit 0 first: a one-LED board's `led` gives `output led`, an eight-LED board's `leds` gives `output [7:0] leds`.
 
+The order of resources in the map means nothing, as JSON objects are unordered: tools may keep or change it. Tools that pick a resource, such as a generator choosing a board's clock, decide by explicit rules, never by position. Order within a resource does mean something: `pins` lists are bit 0 first, or in header order.
+
 | Type | Fields | Example |
 | --- | --- | --- |
 | `clock` | `pin`, `mhz` | `"clk": {"type": "clock", "pin": "35", "mhz": 12}` |
