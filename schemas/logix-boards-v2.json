@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.openlogix.org/schemas/logix-boards-v2.json",
+  "title": "Logix boards",
+  "description": "A custom boards file: a map from board ID to boards in the Logix Catalog format, so a board copies between the two as is.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "const": "https://www.openlogix.org/schemas/logix-boards-v2.json"
+    }
+  },
+  "propertyNames": {
+    "pattern": "^(\\$schema|[a-z0-9-]+)$"
+  },
+  "additionalProperties": {
+    "$ref": "https://www.openlogix.org/schemas/logix-board-v1.json#/$defs/Board"
+  }
+}

@@ -1,0 +1,75 @@
+# The board model
+
+How a board is described in Logix Catalog. The schemas in `schemas/` follow this document; `tools/check.py` checks what they can't.
+
+## A board's file
+
+Each board is one file, `boards/<id>.json`. The ID is the file name: lowercase letters, digits and dashes. A board is its name: anything that changes its pins is another board, and each FPGA size is its own board.
+
+| Field | Required | What it holds |
+| --- | --- | --- |
+| `$schema` | yes | `https://www.openlogix.org/schemas/logix-board-v1.json` |
+| `name` | yes | The board's name for people, such as "iCEBreaker" |
+| `fpga_id` | yes | The FPGA, an ID from `fpgas.json`. The FPGA is always fully known |
+| `variants` | yes | The ways to program the board; the first is the default (see Variants) |
+| `resources` | no | What the board wires to FPGA pins, a map from name to resource (see Resources) |
+
+A custom boards file, which hosts pass to Logix Engine, holds the same board objects without `$schema`, in a map from board ID to board, and names `https://www.openlogix.org/schemas/logix-boards-v2.json`. A board copies between the two as is.
+
+`fpgas.json` maps each FPGA ID to its facts: `architecture` (`ice40`, `ecp5`, `gowin` or `xilinx`), `part_number`, `size`, the toolchain's device names, and `jtag_idcode` where the board is programmed over JTAG. It has every FPGA the toolchain supports, so boards never add FPGAs.
+
+## Variants
+
+Each variant is one way to program the board:
+
+| Field | What it holds |
+| --- | --- |
+| `selector` | `{"connection": …, "memory": …}`. Connection: `usb`, `bootloader`, `ft2232h`, `ft232h`, `cmsis-dap`, `usb-blaster` or `unspecified`. Memory: `flash` or `ram`. No two variants of a board share a selector |
+| `programmer` | `openfpgaloader`, `iceprog`, `dfu-util` or `icesprog` |
+| `args` | The programmer's arguments, with `${VID}`, `${PID}`, `${BUS}`, `${DEV}`, `${SERIAL_NUM}`, `${USB_PATH}` and `${BITSTREAM}` |
+| `usb` | The USB device the board is programmed through: `vid`, `pid`, and when known `product_regex`, `release` (bcdDevice) and `serial_regex`. These are facts about the board; how a tool matches devices to boards is its own |
+| `tested` | Whether programming this way is known to work |
+| `user_notes`, `maintainer_notes` | Optional notes for users, and for maintainers (where settings come from and why they changed) |
+
+When a board has a variant that writes flash, the first variant writes flash.
+
+## Resources
+
+`resources` maps each name to a resource. The name is the port name a design uses, a Verilog identifier, so it's unique on the board. One pin gives a plain port and several a vector, bit 0 first: a one-LED board's `led` gives `output led`, an eight-LED board's `leds` gives `output [7:0] leds`.
+
+| Type | Fields | Example |
+| --- | --- | --- |
+| `clock` | `pin`, `mhz` | `"clk": {"type": "clock", "pin": "35", "mhz": 12}` |
+| `leds` | `pins`, `active` | `"leds": {"type": "leds", "pins": ["11", "37"], "active": "low"}` |
+| `rgb_led` | `red`, `green`, `blue`, `active` | `"rgb": {"type": "rgb_led", "red": "41", "green": "39", "blue": "40", "active": "low"}` |
+| `led_matrix` | `leds` (a pin per LED), `colors` (`red`, `green`, `blue`), `active` | the ButterStick's seven RGB LEDs |
+| `buttons` | `pins`, `active` | `"btn": {"type": "buttons", "pins": ["10"], "active": "low"}` |
+| `switches` | `pins`, `active` | like buttons |
+| `uart` | `tx`, `rx`, optional `rts`, `cts` (`tx` is the FPGA's output) | `"uart": {"type": "uart", "tx": "9", "rx": "6"}` |
+| `pmod` | `pins`: the 8 signal pins in header order, 1 to 4 then 7 to 10 | `"pmod1a": {"type": "pmod", "pins": ["4", "2", "47", "45", "3", "48", "46", "44"]}` |
+| `header` | `pins`: every position in order, `null` for power and ground | headers that aren't PMODs |
+| `unclassified` | `pins`: every FPGA pin the board wires to something no other resource describes | see Partial knowledge |
+
+Every resource may also have:
+
+- `io_standard`: one common name for every FPGA family (`LVCMOS33`, `LVCMOS25`, `LVCMOS18`, `LVCMOS15`, `LVCMOS12`, `LVTTL`, `LVDS`, `SSTL15`, `SSTL135`), checked against the board's FPGA family. Pin file writers translate it: `IO_TYPE` for ECP5 and Gowin, `IOSTANDARD` for Xilinx. iCE40 pin files have none, so iCE40 boards don't use it.
+- `source`: where its facts come from, `{"kind": …, "ref": …}`. Kinds, strongest first: `hardware` (tried on the board), `schematic`, `maker` (the maker's docs, pin files or examples), `litex` and `amaranth` (imported from their board files; `ref` names the file and commit), `user` (reported, not yet checked).
+- `user_notes`: warnings for users, such as a jumper a clock needs.
+
+`active` is `high` or `low`; left out, it's unknown. An LED in a `led_matrix` lights when its pin and a color's pin are both active.
+
+## Overlap
+
+Resources may share pins: one pin is often wired to two things, such as an LED that is also a PMOD pin, so both are listed. Within one resource, pins are unique. A design may use a pin only once: the user or a generator picks resources, or some pins of one, and tools check that no pin is picked twice. Generators pick the simplest resources that need no jumper or add-on.
+
+## Partial knowledge
+
+A board's file lists what is known and leaves the rest unknown: a type with no resource listed is unknown, and so is a field left out, such as `active`. A board with an `unclassified` resource lists all its wired pins, so it's complete: a type it doesn't list, it doesn't have. FPGA pins wired to nothing are never listed.
+
+## Disagreements
+
+The file holds one value per resource, with its source, never a list of reports. When a pull request brings a different value, review keeps the better-sourced one, and git keeps the history. Importers never overwrite a resource from a stronger source; they report the difference.
+
+## Not decided yet
+
+- At which levels (board, resource, field) to keep user and maintainer notes. Until then, boards keep the notes they have: on variants, and `user_notes` on resources.
