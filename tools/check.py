@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Checks Logix Catalog: every board file against the schema, the rules the
-schema can't express, and the canonical formatting.
+"""Checks Logix Catalog: every board file and FPGA file against its schema,
+the rules the schemas can't express, and the canonical formatting.
 
     tools/check.py          check everything, exit 1 on any problem
     tools/check.py --fix    also rewrite files in the canonical format
@@ -17,6 +17,12 @@ import jsonschema
 
 ROOT = Path(__file__).resolve().parent.parent
 BOARD_SCHEMA = "https://www.openlogix.org/schemas/logix-board-v1.json"
+
+
+def fpgas_schema_url(arch):
+    """The address of an FPGA family's schema, which fpgas/<arch>.json names."""
+    return f"https://www.openlogix.org/schemas/logix-fpgas-{arch}-v1.json"
+
 ARCHITECTURES = {"ice40", "ecp5", "gowin", "xilinx"}
 # The I/O standards each FPGA family's pin files can name. iCE40 pin files
 # have no per-pin standard.
@@ -62,6 +68,18 @@ def schema():
     """The board schema's validator."""
     board = json.loads((ROOT / "schemas/logix-board-v1.json").read_text())
     return jsonschema.Draft202012Validator(board)
+
+
+def fpgas_schema(arch):
+    """The validator of an FPGA family's file, fpgas/<arch>.json."""
+    s = json.loads((ROOT / f"schemas/logix-fpgas-{arch}-v1.json").read_text())
+    return jsonschema.Draft202012Validator(s)
+
+
+def schema_errors(validator, data):
+    """A validator's errors, as (where, what), in file order."""
+    errors = sorted(validator.iter_errors(data), key=lambda e: [str(p) for p in e.absolute_path])
+    return [("/".join(str(p) for p in e.absolute_path) or "(file)", e.message) for e in errors]
 
 
 def resource_pins(r):
@@ -153,25 +171,18 @@ def load_fpgas(root=ROOT):
         except json.JSONDecodeError as e:
             problems.append((rel, f"line {e.lineno}", e.msg))
             continue
+        found = schema_errors(fpgas_schema(arch), entries)
+        problems += [(rel, w, t) for w, t in found]
+        if found:
+            continue
         for fid, f in entries.items():
+            if fid == "$schema":
+                continue
             if fid in fpgas:
                 problems.append((rel, fid, f"Also in fpgas/{fpgas[fid]['architecture']}.json: an FPGA ID is in one file only."))
                 continue
-            problems += [(rel, w, t) for w, t in fpga_problems(fid, f)]
             fpgas[fid] = {"architecture": arch, **f}
     return fpgas, problems
-
-
-def fpga_problems(fid, f):
-    out = []
-    if not re.fullmatch(r"[a-z0-9-]+", fid):
-        out.append((fid, "An FPGA ID uses lowercase letters, digits and dashes."))
-    if "architecture" in f:
-        out.append((f"{fid}/architecture", "Not allowed: the file's name gives the architecture."))
-    for field in ("part_number", "size", "nextpnr_device"):
-        if not isinstance(f.get(field), str) or not f[field]:
-            out.append((f"{fid}/{field}", "Required, a non-empty string."))
-    return out
 
 
 def check(fix=False):

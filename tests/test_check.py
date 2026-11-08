@@ -130,22 +130,36 @@ class Catalog(unittest.TestCase):
         self.assertEqual(FPGA_PROBLEMS, [])
         self.assertEqual(FPGAS["ice40up5k-sg48"]["architecture"], "ice40")
         self.assertEqual({f["architecture"] for f in FPGAS.values()}, check.ARCHITECTURES)
-        part = {"part_number": "P", "size": "1k", "nextpnr_device": "d"}
+        part = {"part_number": "P", "size": "1k", "nextpnr_device": "d", "nextpnr_package": "p"}
+        ice40 = {"$schema": check.fpgas_schema_url("ice40")}
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp) / "fpgas"
             folder.mkdir()
-            (folder / "ice40.json").write_text(json.dumps({"a": part, "B": part}))
-            (folder / "ecp5.json").write_text(json.dumps({"a": part, "c": {**part, "architecture": "ecp5"}}))
+            ecp5 = {**part, "nextpnr_speed": "6"}
+            (folder / "ecp5.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("ecp5"), "a": ecp5}))
+            (folder / "ice40.json").write_text(json.dumps({**ice40, "a": part, "b": part}))
+            (folder / "gowin.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("ice40"), "g": part}))
+            (folder / "xilinx.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("xilinx"), "B": part}))
             (folder / "other.json").write_text("{}")
             fpgas, found = check.load_fpgas(Path(tmp))
-        self.assertEqual(sorted(fpgas), ["B", "a", "c"])
+        self.assertEqual(sorted(fpgas), ["a", "b"])
         self.assertEqual(fpgas["a"]["architecture"], "ecp5")
         self.assertEqual(found, [
-            ("fpgas/ecp5.json", "c/architecture", "Not allowed: the file's name gives the architecture."),
+            ("fpgas/gowin.json", "$schema", "'https://www.openlogix.org/schemas/logix-fpgas-gowin-v1.json' was expected"),
+            ("fpgas/gowin.json", "g", "'packer_device' is a required property"),
+            ("fpgas/gowin.json", "g", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
             ("fpgas/ice40.json", "a", "Also in fpgas/ecp5.json: an FPGA ID is in one file only."),
-            ("fpgas/ice40.json", "B", "An FPGA ID uses lowercase letters, digits and dashes."),
             ("fpgas/other.json", "name", "'other' isn't one of ['ecp5', 'gowin', 'ice40', 'xilinx']."),
+            ("fpgas/xilinx.json", "(file)", "'B' does not match '^(\\\\$schema|[a-z0-9]+(-[a-z0-9]+)*)$'"),
+            ("fpgas/xilinx.json", "B", "'yosys_arch' is a required property"),
+            ("fpgas/xilinx.json", "B", "'prjxray_family' is a required property"),
+            ("fpgas/xilinx.json", "B", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
         ])
+        # The schemas check fields and IDs.
+        errors = check.schema_errors(check.fpgas_schema("ice40"), {**ice40, "B": {**part, "architecture": "ice40"}})
+        self.assertEqual([w for w, _ in errors], ["(file)", "B"])
+        self.assertIn("'B' does not match", errors[0][1])
+        self.assertIn("'architecture' was unexpected", errors[1][1])
 
     def test_canonical_format(self):
         text = check.canonical_file({"a": {"b": [1, 2]}, "c": ["x" * 120]})
