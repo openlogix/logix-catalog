@@ -98,6 +98,7 @@ def board_problems(board, fpgas):
                 out.append((f"variants/{i}/args", f"Unknown variable ${{{var}}}."))
     if any(v["selector"]["memory"] == "flash" for v in variants) and variants[0]["selector"]["memory"] != "flash":
         out.append(("variants/0", "The default variant, the first, must write flash when the board has a flash variant."))
+    out += requirement_problems(board, arch)
     for name, r in board.get("resources", {}).items():
         pins = resource_pins(r)
         dup = {p for _, p in pins if [q for _, q in pins].count(p) > 1}
@@ -107,6 +108,32 @@ def board_problems(board, fpgas):
         if std is not None and arch is not None and std not in IO_STANDARDS[arch]:
             allowed = ", ".join(sorted(IO_STANDARDS[arch])) or "none"
             out.append((f"resources/{name}/io_standard", f"{std} isn't an I/O standard for {arch} (allowed: {allowed})."))
+    return out
+
+
+def requirement_problems(board, arch):
+    """Problems in the board's and its resources' `requires`: a drive's
+    name is a port name no resource or other drive has, its pins are in it
+    once, and its I/O standard fits the FPGA family."""
+    out = []
+    names = set(board.get("resources", {}))
+    places = [("requires", board.get("requires", []))]
+    places += [(f"resources/{n}/requires", r.get("requires", [])) for n, r in board.get("resources", {}).items()]
+    for where, reqs in places:
+        for i, q in enumerate(reqs):
+            if q["type"] != "drive":
+                continue
+            at = f"{where}/{i}"
+            if q["name"] in names:
+                out.append((f"{at}/name", f"Another resource or drive is named {q['name']}."))
+            names.add(q["name"])
+            dup = {p for p in q["pins"] if q["pins"].count(p) > 1}
+            for p in sorted(dup):
+                out.append((f"{at}/pins", f"Pin {p} is in this drive twice."))
+            std = q.get("io_standard")
+            if std is not None and arch is not None and std not in IO_STANDARDS[arch]:
+                allowed = ", ".join(sorted(IO_STANDARDS[arch])) or "none"
+                out.append((f"{at}/io_standard", f"{std} isn't an I/O standard for {arch} (allowed: {allowed})."))
     return out
 
 

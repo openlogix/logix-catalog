@@ -20,7 +20,7 @@ Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA 
 
 - Keep facts true: every value comes from a source (the board's maker, its schematic, LiteX or Amaranth board files, hardware tests). Record the source in `source` for new facts. Never guess pins or polarity; leave unknowns out.
 - Boards that can't be bought anymore, for some time, are dropped (the user's rule).
-- Examples and generated designs use only a board's default configuration (no jumpers or add-ons) unless very explicit; resources that need a jumper say so in `user_notes`.
+- Examples and generated designs use only a board's default configuration (no jumpers or add-ons) unless very explicit; resources that need a jumper have a `setup` requirement, and pins every design must drive are a board's `drive` requirements (`requires`, docs/model.md).
 - Breaking format changes are fine until the first release; after it, only additions.
 - Releases: dated tags (`yyyy-mm-dd`), not set up yet; the engine will pin one.
 

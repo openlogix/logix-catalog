@@ -88,6 +88,39 @@ class Catalog(unittest.TestCase):
         b["variants"].insert(0, ram)
         self.assertEqual(problems(b)[0][0], "variants/0")
 
+    def test_requirements(self):
+        drive = {"type": "drive", "name": "en", "pins": ["2"], "level": "high", "why": "Turns the LEDs on."}
+        setup = {"type": "setup", "text": "Close jumper J1."}
+        b = copy.deepcopy(GOOD)
+        b["requires"] = [drive]
+        b["resources"]["clk"]["requires"] = [setup]
+        b["resources"]["led"]["requires"] = [dict(drive, name="led_en", pins=["3"], level="low")]
+        self.assertEqual(problems(b), [])
+        # Schema: a known type, its required fields, a level, no empty list.
+        for change in [
+            lambda b: b["requires"][0].update(type="wire"),
+            lambda b: b["requires"][0].pop("level"),
+            lambda b: b["requires"][0].update(level="up"),
+            lambda b: b["requires"][0].update(name="2en"),
+            lambda b: b["requires"][0].update(pins=[]),
+            lambda b: b["resources"]["clk"]["requires"][0].update(text=""),
+            lambda b: b["resources"]["clk"].update(requires=[]),
+        ]:
+            c = copy.deepcopy(b)
+            change(c)
+            self.assertTrue(problems(c), c)
+        # Beyond the schema: names unique on the board, pins once, I/O standard.
+        c = copy.deepcopy(b)
+        c["requires"][0].update(name="led", pins=["2", "2"], io_standard="LVCMOS33")
+        self.assertEqual(problems(c), [
+            ("requires/0/name", "Another resource or drive is named led."),
+            ("requires/0/pins", "Pin 2 is in this drive twice."),
+            ("requires/0/io_standard", "LVCMOS33 isn't an I/O standard for ice40 (allowed: none)."),
+        ])
+        c = copy.deepcopy(b)
+        c["resources"]["led"]["requires"][0]["name"] = "en"
+        self.assertEqual(problems(c), [("resources/led/requires/0/name", "Another resource or drive is named en.")])
+
     def test_resources_may_share_pins(self):
         b = copy.deepcopy(GOOD)
         b["resources"]["pmod"] = {"type": "pmod", "pins": ["37", "2", "3", "4", "5", "6", "7", "8"]}

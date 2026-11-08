@@ -12,6 +12,7 @@ Each board is one file, `boards/<id>.json`. The ID is the file name: lowercase l
 | `name` | yes | The board's name for people, such as "iCEBreaker" |
 | `fpga_id` | yes | The FPGA, an ID from `fpgas/`. The FPGA is always fully known |
 | `variants` | yes | The ways to program the board; the first is the default (see Variants) |
+| `requires` | no | What every design for the board must do (see Requirements) |
 | `resources` | no | What the board wires to FPGA pins, a map from name to resource (see Resources) |
 
 Custom boards use the same layout: a folder of `<id>.json` files, each one board in this format, such as a project's `boards/` folder that a host passes to Logix Engine as `custom_boards_folder`. A custom board with a catalog board's ID replaces it. A board copies between a project and the catalog as a file, name and all, so a custom board becomes a contribution by moving its file into a pull request.
@@ -56,13 +57,25 @@ Every resource may also have:
 
 - `io_standard`: one common name for every FPGA family (`LVCMOS33`, `LVCMOS25`, `LVCMOS18`, `LVCMOS15`, `LVCMOS12`, `LVTTL`, `LVDS`, `SSTL15`, `SSTL135`), checked against the board's FPGA family. Pin file writers translate it: `IO_TYPE` for ECP5 and Gowin, `IOSTANDARD` for Xilinx. iCE40 pin files have none, so iCE40 boards don't use it.
 - `source`: where its facts come from, `{"kind": …, "ref": …}`. Kinds, strongest first: `hardware` (tried on the board), `schematic`, `maker` (the maker's docs, pin files or examples), `litex` and `amaranth` (imported from their board files; `ref` names the file and commit), `user` (reported, not yet checked).
-- `user_notes`: warnings for users, such as a jumper a clock needs.
+- `requires`: what must be done for it to work (see Requirements), such as a jumper a clock needs.
+- `user_notes`: warnings and missing information for users.
 
 `active` is `high` or `low`; left out, it's unknown. An LED in a `led_matrix` lights when its pin and a color's pin are both active.
 
+## Requirements
+
+`requires`, on a board or on a resource, lists what must be done for it to work, each with a `type`:
+
+| Type | Who acts | Fields | Example |
+| --- | --- | --- | --- |
+| `drive` | the design | `name` (a port name, unique on the board among resources and drives), `pins` (bit 0 first), `level` (`high` or `low`), optional `io_standard`, `why`, `source` | the ULX3S's `wifi_gpio0`, held high, or the ESP32 resets the board |
+| `setup` | a person | `text` (what to do), optional `source` | a jumper a clock needs |
+
+A board's requirements apply to every design for it; a resource's apply when a design uses it. Generators include a board's drives, leave out resources that need a setup (so designs work on the board as shipped), and include the drives of the resources they use. `why` and `text` are for people; tools never read them. Only these two types exist; new ones come with a real case.
+
 ## Overlap
 
-Resources may share pins: one pin is often wired to two things, such as an LED that is also a PMOD pin, so both are listed. Within one resource, pins are unique. A design may use a pin only once: the user or a generator picks resources, or some pins of one, and tools check that no pin is picked twice. Generators pick the simplest resources that need no jumper or add-on.
+Resources may share pins: one pin is often wired to two things, such as an LED that is also a PMOD pin, so both are listed. Within one resource, pins are unique. A design may use a pin only once: the user or a generator picks resources, or some pins of one, and tools check that no pin is picked twice. Generators pick the simplest resources that need no setup or add-on.
 
 ## Partial knowledge
 
