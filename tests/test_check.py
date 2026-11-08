@@ -30,7 +30,7 @@ GOOD = {
         "led": {"type": "leds", "pins": ["37"], "active": "low"},
     },
 }
-BOARD, BOARDS = check.schemas()
+BOARD = check.schema()
 
 
 def problems(board):
@@ -45,13 +45,6 @@ class Catalog(unittest.TestCase):
 
     def test_a_good_board(self):
         self.assertEqual(problems(GOOD), [])
-
-    def test_custom_boards_files_hold_the_same_boards(self):
-        board = {k: v for k, v in GOOD.items() if k != "$schema"}
-        self.assertEqual(list(BOARDS.iter_errors({"$schema": check.BOARDS_SCHEMA, "my-board": board})), [])
-        # A board inside it has no $schema, and IDs are lowercase.
-        self.assertTrue(list(BOARDS.iter_errors({"my-board": GOOD})))
-        self.assertTrue(list(BOARDS.iter_errors({"My-Board": board})))
 
     def test_schema_errors(self):
         for change in [

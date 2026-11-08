@@ -6,12 +6,12 @@ Guidance for Claude working in this repo. Shared Open Logix rules (products, pri
 
 Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA boards: one JSON file per board in `boards/`, the FPGAs in `fpgas.json`. Logix Engine builds a pinned catalog release into its binary; other projects can use the data without the engine. Contributors add and fix boards here, never in the engine repo.
 
-[`docs/model.md`](docs/model.md) is the source of truth for the format. Read it before changing the schemas, the checker or the data, and update it in the same change. The design was settled with the user in a review doc (2026-11-08); its decisions are all in `docs/model.md`.
+[`docs/model.md`](docs/model.md) is the source of truth for the format, and [`docs/design.md`](docs/design.md) for the decisions behind it, importing, and how the engine uses the catalog. Read them before changing the schemas, the checker or the data, and update them in the same change. They replace the design review doc (2026-11-08), which is obsolete.
 
 ## Layout and commands
 
 - `boards/<id>.json`: one board each (`$schema` logix-board-v1). `fpgas.json`: FPGAs by ID.
-- `schemas/logix-board-v1.json` (one board's file) and `schemas/logix-boards-v2.json` (custom boards files: a map from board ID to the same board objects). Hand-written JSON Schema 2020-12; this repo owns them. The website serves copies at `www.openlogix.org/schemas/`: after a change, copy them to the website repo's `docs/schemas/` and push it (it goes live). Until the first release they change without a new version.
+- `schemas/logix-board-v1.json`: one board's file, the only schema (custom boards are folders of the same files; the user's decision, 2026-11-08). Hand-written JSON Schema 2020-12; this repo owns it. The website serves a copy at `www.openlogix.org/schemas/`: after a change, copy it to the website repo's `docs/schemas/` and push it (it goes live). Until the first release it changes without a new version.
 - `tools/check.py`: checks every board against the schema, then the rules the schema can't express (FPGA IDs exist, no pin twice in a resource, I/O standards valid for the FPGA family, unique variant selectors, known `${…}` variables, flash first), then the canonical format (two-space indents; an object or array that fits in 100 columns on one line). `--fix` rewrites files in the canonical format.
 - `tests/test_check.py`: the checker's tests, a board breaking each rule.
 - **Before committing, run `scripts/test.sh`.** It makes `.venv` with `requirements.txt` (jsonschema, pinned) on first use. CI (`.github/workflows/test.yaml`) runs the same script.

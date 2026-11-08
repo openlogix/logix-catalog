@@ -14,11 +14,9 @@ import sys
 from pathlib import Path
 
 import jsonschema
-from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parent.parent
 BOARD_SCHEMA = "https://www.openlogix.org/schemas/logix-board-v1.json"
-BOARDS_SCHEMA = "https://www.openlogix.org/schemas/logix-boards-v2.json"
 ARCHITECTURES = {"ice40", "ecp5", "gowin", "xilinx"}
 # The I/O standards each FPGA family's pin files can name. iCE40 pin files
 # have no per-pin standard.
@@ -60,18 +58,10 @@ def canonical_file(value):
     return canonical(value) + "\n"
 
 
-def schemas():
-    """The board schema's validator and the boards schema's, with the board
-    schema registered so the boards schema can refer to it."""
+def schema():
+    """The board schema's validator."""
     board = json.loads((ROOT / "schemas/logix-board-v1.json").read_text())
-    boards = json.loads((ROOT / "schemas/logix-boards-v2.json").read_text())
-    registry = Registry().with_resources(
-        [(BOARD_SCHEMA, Resource.from_contents(board)), (BOARDS_SCHEMA, Resource.from_contents(boards))]
-    )
-    return (
-        jsonschema.Draft202012Validator(board, registry=registry),
-        jsonschema.Draft202012Validator(boards, registry=registry),
-    )
+    return jsonschema.Draft202012Validator(board)
 
 
 def resource_pins(r):
@@ -136,7 +126,7 @@ def fpga_problems(fpgas):
 def check(fix=False):
     """All problems, as "<file>: <where>: <what>" lines."""
     problems = []
-    board_validator, _ = schemas()
+    board_validator = schema()
     fpgas_path = ROOT / "fpgas.json"
     fpgas = json.loads(fpgas_path.read_text())
     problems += [f"fpgas.json: {w}: {t}" for w, t in fpga_problems(fpgas)]

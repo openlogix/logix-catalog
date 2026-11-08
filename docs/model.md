@@ -14,7 +14,7 @@ Each board is one file, `boards/<id>.json`. The ID is the file name: lowercase l
 | `variants` | yes | The ways to program the board; the first is the default (see Variants) |
 | `resources` | no | What the board wires to FPGA pins, a map from name to resource (see Resources) |
 
-A custom boards file, which hosts pass to Logix Engine, holds the same board objects without `$schema`, in a map from board ID to board, and names `https://www.openlogix.org/schemas/logix-boards-v2.json`. A board copies between the two as is.
+Custom boards use the same layout: a folder of `<id>.json` files, each one board in this format, such as a project's `boards/` folder that a host passes to Logix Engine (planned: `custom_boards_folder`, replacing today's `custom_boards_file`). A custom board with a catalog board's ID replaces it. A board copies between a project and the catalog as a file, name and all, so a custom board becomes a contribution by moving its file into a pull request.
 
 `fpgas.json` maps each FPGA ID to its facts: `architecture` (`ice40`, `ecp5`, `gowin` or `xilinx`), `part_number`, `size`, the toolchain's device names, and `jtag_idcode` where the board is programmed over JTAG. It has every FPGA the toolchain supports, so boards never add FPGAs.
 
