@@ -25,6 +25,7 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 | Resources may share pins; designs may not | A pin is often wired to two things, such as an LED on a PMOD pin |
 | `unclassified` makes a board complete | Lists every wired pin no other resource covers, so absence can be stated without a marker per type |
 | `requires` on boards and resources, of two types: `drive` (the design) and `setup` (a person) | Generators can tell what a design must include and what needs a jumper, without reading notes; more types only with a real case (the user's idea, 2026-11-08) |
+| No pull or drive fields: generators derive them from the FPGA family and the resource type (clock: no pull; outputs such as LEDs: the family's default drive; buttons and switches: pull toward the inactive level) | The examples' settings were the toolchains' defaults or template copies (apicula's Gowin defaults are PULL_MODE=UP, DRIVE=8); max drive barely brightens an LED behind its resistor and adds noise and risk. A board that needs other values gets a pull or drive requirement on that resource later, with a source (2026-11-08) |
 | One common `io_standard` name, translated per FPGA family | Board files stay family-neutral; the checker knows each family's set |
 | One value and one `source` per resource; review settles disagreements | No history of reports to manage; git keeps the history |
 | A board's USB device is board data; matching stays the engine's | Useful facts about the board, while match criteria stay internal to the engine |
