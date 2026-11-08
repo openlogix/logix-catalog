@@ -12,6 +12,7 @@ Logix Catalog is the open catalog of FPGA boards behind every Logix tool: each b
 - [`fpgas.json`](fpgas.json): every FPGA the toolchain supports, by ID.
 - [`schemas/`](schemas/): the JSON Schemas, also served at `www.openlogix.org/schemas/`.
 - [`docs/model.md`](docs/model.md): how a board is described.
+- [`docs/design.md`](docs/design.md): why it's shaped this way, and how Logix Engine uses it.
 - [`tools/check.py`](tools/check.py): checks the catalog.
 
 ## Adding or fixing a board
