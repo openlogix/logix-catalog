@@ -10,7 +10,7 @@ Why Logix Catalog is shaped the way it is, how it grows, and how Logix Engine us
 - **Useful.** Enough to generate a blinky, a pin file or an example, and to check that a design's pins fit the board.
 - **Convertible.** To and from LiteX and Amaranth board definitions, keeping everything either records about pins.
 
-Not goals: describing the FPGA itself (`fpgas.json` holds only what tools need), full schematics, or power and analog details.
+Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), full schematics, or power and analog details.
 
 ## Decisions
 

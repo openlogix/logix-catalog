@@ -84,7 +84,7 @@ def board_problems(board, fpgas):
     out = []
     fpga = fpgas.get(board.get("fpga_id"))
     if fpga is None:
-        out.append(("fpga_id", f"{board.get('fpga_id')!r} isn't in fpgas.json."))
+        out.append(("fpga_id", f"{board.get('fpga_id')!r} isn't in fpgas/."))
     arch = fpga["architecture"] if fpga else None
     variants = board.get("variants", [])
     seen = set()
@@ -110,16 +110,40 @@ def board_problems(board, fpgas):
     return out
 
 
-def fpga_problems(fpgas):
+def load_fpgas(root=ROOT):
+    """The FPGAs of every fpgas/<architecture>.json, by ID, each with its
+    `architecture` taken from its file's name, and the problems found, as
+    (file, where, what)."""
+    fpgas, problems = {}, []
+    for path in sorted((root / "fpgas").glob("*.json")):
+        rel = str(path.relative_to(root))
+        arch = path.stem
+        if arch not in ARCHITECTURES:
+            problems.append((rel, "name", f"{arch!r} isn't one of {sorted(ARCHITECTURES)}."))
+            continue
+        try:
+            entries = json.loads(path.read_text())
+        except json.JSONDecodeError as e:
+            problems.append((rel, f"line {e.lineno}", e.msg))
+            continue
+        for fid, f in entries.items():
+            if fid in fpgas:
+                problems.append((rel, fid, f"Also in fpgas/{fpgas[fid]['architecture']}.json: an FPGA ID is in one file only."))
+                continue
+            problems += [(rel, w, t) for w, t in fpga_problems(fid, f)]
+            fpgas[fid] = {"architecture": arch, **f}
+    return fpgas, problems
+
+
+def fpga_problems(fid, f):
     out = []
-    for fid, f in fpgas.items():
-        if not re.fullmatch(r"[a-z0-9-]+", fid):
-            out.append((fid, "An FPGA ID uses lowercase letters, digits and dashes."))
-        if f.get("architecture") not in ARCHITECTURES:
-            out.append((f"{fid}/architecture", f"{f.get('architecture')!r} isn't one of {sorted(ARCHITECTURES)}."))
-        for field in ("part_number", "size", "nextpnr_device"):
-            if not isinstance(f.get(field), str) or not f[field]:
-                out.append((f"{fid}/{field}", "Required, a non-empty string."))
+    if not re.fullmatch(r"[a-z0-9-]+", fid):
+        out.append((fid, "An FPGA ID uses lowercase letters, digits and dashes."))
+    if "architecture" in f:
+        out.append((f"{fid}/architecture", "Not allowed: the file's name gives the architecture."))
+    for field in ("part_number", "size", "nextpnr_device"):
+        if not isinstance(f.get(field), str) or not f[field]:
+            out.append((f"{fid}/{field}", "Required, a non-empty string."))
     return out
 
 
@@ -127,11 +151,11 @@ def check(fix=False):
     """All problems, as "<file>: <where>: <what>" lines."""
     problems = []
     board_validator = schema()
-    fpgas_path = ROOT / "fpgas.json"
-    fpgas = json.loads(fpgas_path.read_text())
-    problems += [f"fpgas.json: {w}: {t}" for w, t in fpga_problems(fpgas)]
-    files = [fpgas_path] + sorted((ROOT / "boards").glob("*.json"))
-    for path in files[1:]:
+    fpgas, fpga_found = load_fpgas()
+    problems += [f"{p}: {w}: {t}" for p, w, t in fpga_found]
+    fpga_files = sorted((ROOT / "fpgas").glob("*.json"))
+    board_files = sorted((ROOT / "boards").glob("*.json"))
+    for path in board_files:
         rel = path.relative_to(ROOT)
         bid = path.stem
         if not re.fullmatch(r"[a-z0-9-]+", bid):
@@ -147,7 +171,7 @@ def check(fix=False):
             problems.append(f"{rel}: {where}: {e.message}")
         if not errors:
             problems += [f"{rel}: {w}: {t}" for w, t in board_problems(board, fpgas)]
-    for path in files:
+    for path in fpga_files + board_files:
         text = path.read_text()
         try:
             want = canonical_file(json.loads(text))

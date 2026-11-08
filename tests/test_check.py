@@ -4,6 +4,7 @@ breaks it."""
 import copy
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -11,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 import check  # noqa: E402
 
-FPGAS = json.loads((ROOT / "fpgas.json").read_text())
+FPGAS, FPGA_PROBLEMS = check.load_fpgas()
 GOOD = {
     "$schema": check.BOARD_SCHEMA,
     "name": "Test board",
@@ -66,7 +67,7 @@ class Catalog(unittest.TestCase):
     def test_rules_beyond_the_schema(self):
         b = copy.deepcopy(GOOD)
         b["fpga_id"] = "no-such-fpga"
-        self.assertIn(("fpga_id", "'no-such-fpga' isn't in fpgas.json."), problems(b))
+        self.assertIn(("fpga_id", "'no-such-fpga' isn't in fpgas/."), problems(b))
         b = copy.deepcopy(GOOD)
         b["resources"]["led"]["pins"] = ["37", "37"]
         self.assertEqual(problems(b), [("resources/led", "Pin 37 is in this resource twice.")])
@@ -91,6 +92,27 @@ class Catalog(unittest.TestCase):
         b = copy.deepcopy(GOOD)
         b["resources"]["pmod"] = {"type": "pmod", "pins": ["37", "2", "3", "4", "5", "6", "7", "8"]}
         self.assertEqual(problems(b), [])
+
+    def test_fpga_files(self):
+        self.assertEqual(FPGA_PROBLEMS, [])
+        self.assertEqual(FPGAS["ice40up5k-sg48"]["architecture"], "ice40")
+        self.assertEqual({f["architecture"] for f in FPGAS.values()}, check.ARCHITECTURES)
+        part = {"part_number": "P", "size": "1k", "nextpnr_device": "d"}
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "fpgas"
+            folder.mkdir()
+            (folder / "ice40.json").write_text(json.dumps({"a": part, "B": part}))
+            (folder / "ecp5.json").write_text(json.dumps({"a": part, "c": {**part, "architecture": "ecp5"}}))
+            (folder / "other.json").write_text("{}")
+            fpgas, found = check.load_fpgas(Path(tmp))
+        self.assertEqual(sorted(fpgas), ["B", "a", "c"])
+        self.assertEqual(fpgas["a"]["architecture"], "ecp5")
+        self.assertEqual(found, [
+            ("fpgas/ecp5.json", "c/architecture", "Not allowed: the file's name gives the architecture."),
+            ("fpgas/ice40.json", "a", "Also in fpgas/ecp5.json: an FPGA ID is in one file only."),
+            ("fpgas/ice40.json", "B", "An FPGA ID uses lowercase letters, digits and dashes."),
+            ("fpgas/other.json", "name", "'other' isn't one of ['ecp5', 'gowin', 'ice40', 'xilinx']."),
+        ])
 
     def test_canonical_format(self):
         text = check.canonical_file({"a": {"b": [1, 2]}, "c": ["x" * 120]})

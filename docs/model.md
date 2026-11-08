@@ -10,13 +10,13 @@ Each board is one file, `boards/<id>.json`. The ID is the file name: lowercase l
 | --- | --- | --- |
 | `$schema` | yes | `https://www.openlogix.org/schemas/logix-board-v1.json` |
 | `name` | yes | The board's name for people, such as "iCEBreaker" |
-| `fpga_id` | yes | The FPGA, an ID from `fpgas.json`. The FPGA is always fully known |
+| `fpga_id` | yes | The FPGA, an ID from `fpgas/`. The FPGA is always fully known |
 | `variants` | yes | The ways to program the board; the first is the default (see Variants) |
 | `resources` | no | What the board wires to FPGA pins, a map from name to resource (see Resources) |
 
-Custom boards use the same layout: a folder of `<id>.json` files, each one board in this format, such as a project's `boards/` folder that a host passes to Logix Engine (planned: `custom_boards_folder`, replacing today's `custom_boards_file`). A custom board with a catalog board's ID replaces it. A board copies between a project and the catalog as a file, name and all, so a custom board becomes a contribution by moving its file into a pull request.
+Custom boards use the same layout: a folder of `<id>.json` files, each one board in this format, such as a project's `boards/` folder that a host passes to Logix Engine as `custom_boards_folder`. A custom board with a catalog board's ID replaces it. A board copies between a project and the catalog as a file, name and all, so a custom board becomes a contribution by moving its file into a pull request.
 
-`fpgas.json` maps each FPGA ID to its facts: `architecture` (`ice40`, `ecp5`, `gowin` or `xilinx`), `part_number`, `size`, the toolchain's device names, and `jtag_idcode` where the board is programmed over JTAG. It has every FPGA the toolchain supports, so boards never add FPGAs.
+`fpgas/<architecture>.json`, one file per FPGA family (`ice40`, `ecp5`, `gowin`, `xilinx`), maps each FPGA ID to its facts; the file's name gives the FPGA's `architecture`, and an ID is in one file only. The facts: `part_number`, `size`, the toolchain's device names, and `jtag_idcode` where the board is programmed over JTAG. It has every FPGA the toolchain supports, so boards never add FPGAs.
 
 ## Variants
 
