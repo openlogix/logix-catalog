@@ -21,7 +21,7 @@ Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA 
 - Keep facts true: every value comes from a source (the board's maker, its schematic, LiteX or Amaranth board files, hardware tests). Record the source in `source` for new facts. Never guess pins or polarity; leave unknowns out.
 - Boards that can't be bought anymore, for some time, are dropped (the user's rule).
 - Examples and generated designs use only a board's default configuration (no jumpers or add-ons) unless very explicit; resources that need a jumper have a `setup` requirement, and pins every design must drive are a board's `drive` requirements (`requires`, docs/model.md).
-- `ai_hints` (boards and resources, docs/model.md "AI hints"; 2026-11-09) only for what the structured data can't express; never data a field could hold, facts the data implies, or general FPGA knowledge.
+- `ai_hints` (boards and resources; 2026-11-09): only what the structured data can't express, led by a fact about the board (where it comes from decides, not how many boards share it), with at most a short phrase of context naming the FPGA feature, and no how-to. The rules are in docs/model.md, "AI hints".
 - Breaking format changes are fine until the first release; after it, only additions.
 - Releases: dated tags (`yyyy-mm-dd`), not set up yet; the engine will pin one.
 

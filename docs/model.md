@@ -90,13 +90,25 @@ A board's requirements apply to every design for it; a resource's apply when a d
 
 ## AI hints
 
-`ai_hints`, on a board or a resource, is text for whoever writes designs for the board, mainly AI agents, and people too: what its structured fields can't express, such as the iCE40 UltraPlus boards whose RGB LED is on the FPGA's RGB LED driver pins, which a design drives through `SB_RGBA_DRV`, where a 1 turns an LED on even though the pins are active low. Logix Engine returns the hints with the board, unchanged; tools never read them, like `why` and `text`.
+`ai_hints`, on a board or a resource, is text for whoever writes designs for the board, mainly AI agents, and people too: what its structured fields can't express. Logix Engine returns the hints with the board, unchanged; tools never read them, like `why` and `text`. Example, the UPduino v3.1's RGB LED:
 
-- **Only when the structured data isn't enough.** Anything a field can hold goes in a field, or in a new field added with its first real case, never in a hint. Facts the structured data already implies (a board with no clock that works as shipped) and general FPGA knowledge (the FPGA's internal oscillator) aren't repeated.
+```json
+"ai_hints": [
+  "Wired to the FPGA's RGB LED driver pads: red RGB2, green RGB0, blue RGB1.",
+  "Drive it through SB_RGBA_DRV, the iCE40 UltraPlus's RGB LED driver cell (sink only)."
+]
+```
+
+What goes in them:
+
+- **Only when the structured data isn't enough.** Anything a field can hold goes in a field, or in a new field added with its first real case, never in a hint. Facts the structured data already implies, such as a board with no clock that works as shipped, aren't repeated.
+- **The board's fact leads.** A hint says something true of this board: how its maker wired or built it, from its schematic, its maker or a test on it. To tell a board fact from an FPGA fact, ask where it comes from, not how many boards share it: boards often share wiring (one maker's boards, clones), but a fact from the FPGA's datasheet, true for any board with that FPGA and package, is an FPGA fact.
+- **Context for people is welcome, briefly.** A short phrase may name the FPGA feature involved and say what it is ("SB_RGBA_DRV, the iCE40 UltraPlus's RGB LED driver cell"), so a reader who doesn't know the datasheet understands the hint. It must be true on every board it's copied to.
+- **No how-to.** No settings, steps or values for using the FPGA's features, such as driver currents or which input level lights an LED: those are datasheet knowledge that AI agents have, and copies on many boards go wrong unchecked. Nothing that holds for every board with the FPGA, such as its internal oscillator.
+- **Advice, not orders:** hints are written as facts and suggestions to weigh, never as instructions to an agent.
 - **A list of lines:** each a non-empty single line of at most 90 characters, so it fits on one line of the file, and the list is never empty; with nothing to say, the field is left out.
 - **Last:** always the last field of its board or resource, so it reads as a note on what's above it. `tools/check.py --fix` moves it there.
-- **Advice, not orders:** hints are written as facts and suggestions to weigh, never as instructions to an agent.
-- Only on boards and resources: variants are about programming, requirements have `why` and `text`, and FPGA facts aren't hints.
+- Only on boards and resources: variants are about programming, requirements have `why` and `text`, and the FPGA files hold facts, not hints.
 
 ## Overlap
 
