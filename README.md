@@ -9,7 +9,7 @@ Logix Catalog is the open catalog of FPGA boards behind every Logix tool: each b
 ## What's here
 
 - [`boards/`](boards/): one file per board, `boards/<id>.json`.
-- [`fpgas/`](fpgas): every FPGA the toolchain supports, by ID, one file per FPGA family (`ice40.json`, `ecp5.json`, `gowin.json`, `xilinx.json`).
+- [`fpgas/`](fpgas): every FPGA the toolchain supports, by ID, one file per FPGA family (`ice40.json`, `ecp5.json`, `gw1n.json`, `gw2a.json`, `gw5a.json`, `artix7.json`, `spartan7.json`, `zynq7000.json`).
 - [`schemas/`](schemas/): the JSON Schemas, also served at `www.openlogix.org/schemas/`.
 - [`docs/model.md`](docs/model.md): how a board is described.
 - [`docs/design.md`](docs/design.md): why it's shaped this way, and how Logix Engine uses it.

@@ -19,19 +19,37 @@ ROOT = Path(__file__).resolve().parent.parent
 BOARD_SCHEMA = "https://www.openlogix.org/schemas/logix-board-v1.json"
 
 
-def fpgas_schema_url(arch):
-    """The address of an FPGA family's schema, which fpgas/<arch>.json names."""
-    return f"https://www.openlogix.org/schemas/logix-fpgas-{arch}-v1.json"
+def fpgas_schema_url(schema):
+    """The address of an FPGA schema, which the FPGA files that use it name."""
+    return f"https://www.openlogix.org/schemas/logix-fpgas-{schema}-v1.json"
 
-ARCHITECTURES = {"ice40", "ecp5", "gowin", "xilinx"}
-# The I/O standards each FPGA family's pin files can name. iCE40 pin files
-# have no per-pin standard.
+# The FPGA families, one file each, fpgas/<family>.json: each family's
+# schema, shared by the families whose FPGAs have the same fields, and the
+# start of its part numbers.
+FAMILIES = {
+    "ice40": ("ice40", ("ICE40", "ICE5")),
+    "ecp5": ("ecp5", ("LFE5",)),
+    "gw1n": ("gowin", ("GW1N",)),
+    "gw2a": ("gowin", ("GW2A",)),
+    "gw5a": ("gowin", ("GW5A",)),
+    "artix7": ("openxc7", ("XC7A",)),
+    "spartan7": ("openxc7", ("XC7S",)),
+    "zynq7000": ("openxc7", ("XC7Z",)),
+}
+# The I/O standards each schema's families' pin files can name. iCE40 pin
+# files have no per-pin standard.
+SEVEN = {"LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12", "LVTTL", "LVDS", "SSTL15", "SSTL135"}
 IO_STANDARDS = {
     "ice40": set(),
-    "ecp5": {"LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12", "LVDS", "SSTL15", "SSTL135"},
-    "gowin": {"LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12", "LVTTL", "LVDS", "SSTL15", "SSTL135"},
-    "xilinx": {"LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12", "LVTTL", "LVDS", "SSTL15", "SSTL135"},
+    "ecp5": SEVEN - {"LVTTL"},
+    "gowin": SEVEN,
+    "openxc7": SEVEN,
 }
+
+
+def io_standards(family):
+    """The I/O standards a family's pin files can name."""
+    return IO_STANDARDS[FAMILIES[family][0]]
 TEMPLATE_VARIABLES = {"VID", "PID", "BUS", "DEV", "SERIAL_NUM", "USB_PATH", "BITSTREAM"}
 WIDTH = 100
 
@@ -70,9 +88,9 @@ def schema():
     return jsonschema.Draft202012Validator(board)
 
 
-def fpgas_schema(arch):
-    """The validator of an FPGA family's file, fpgas/<arch>.json."""
-    s = json.loads((ROOT / f"schemas/logix-fpgas-{arch}-v1.json").read_text())
+def fpgas_schema(schema):
+    """The validator of an FPGA schema's files."""
+    s = json.loads((ROOT / f"schemas/logix-fpgas-{schema}-v1.json").read_text())
     return jsonschema.Draft202012Validator(s)
 
 
@@ -103,7 +121,7 @@ def board_problems(board, fpgas):
     fpga = fpgas.get(board.get("fpga_id"))
     if fpga is None:
         out.append(("fpga_id", f"{board.get('fpga_id')!r} isn't in fpgas/."))
-    arch = fpga["architecture"] if fpga else None
+    family = fpga["family"] if fpga else None
     variants = board.get("variants", [])
     seen = set()
     for i, v in enumerate(variants):
@@ -116,20 +134,20 @@ def board_problems(board, fpgas):
                 out.append((f"variants/{i}/args", f"Unknown variable ${{{var}}}."))
     if any(v["selector"]["memory"] == "flash" for v in variants) and variants[0]["selector"]["memory"] != "flash":
         out.append(("variants/0", "The default variant, the first, must write flash when the board has a flash variant."))
-    out += requirement_problems(board, arch)
+    out += requirement_problems(board, family)
     for name, r in board.get("resources", {}).items():
         pins = resource_pins(r)
         dup = {p for _, p in pins if [q for _, q in pins].count(p) > 1}
         for p in sorted(dup):
             out.append((f"resources/{name}", f"Pin {p} is in this resource twice."))
         std = r.get("io_standard")
-        if std is not None and arch is not None and std not in IO_STANDARDS[arch]:
-            allowed = ", ".join(sorted(IO_STANDARDS[arch])) or "none"
-            out.append((f"resources/{name}/io_standard", f"{std} isn't an I/O standard for {arch} (allowed: {allowed})."))
+        if std is not None and family is not None and std not in io_standards(family):
+            allowed = ", ".join(sorted(io_standards(family))) or "none"
+            out.append((f"resources/{name}/io_standard", f"{std} isn't an I/O standard for {family} (allowed: {allowed})."))
     return out
 
 
-def requirement_problems(board, arch):
+def requirement_problems(board, family):
     """Problems in the board's and its resources' `requires`: a drive's
     name is a port name no resource or other drive has, its pins are in it
     once, and its I/O standard fits the FPGA family."""
@@ -149,29 +167,30 @@ def requirement_problems(board, arch):
             for p in sorted(dup):
                 out.append((f"{at}/pins", f"Pin {p} is in this drive twice."))
             std = q.get("io_standard")
-            if std is not None and arch is not None and std not in IO_STANDARDS[arch]:
-                allowed = ", ".join(sorted(IO_STANDARDS[arch])) or "none"
-                out.append((f"{at}/io_standard", f"{std} isn't an I/O standard for {arch} (allowed: {allowed})."))
+            if std is not None and family is not None and std not in io_standards(family):
+                allowed = ", ".join(sorted(io_standards(family))) or "none"
+                out.append((f"{at}/io_standard", f"{std} isn't an I/O standard for {family} (allowed: {allowed})."))
     return out
 
 
 def load_fpgas(root=ROOT):
-    """The FPGAs of every fpgas/<architecture>.json, by ID, each with its
-    `architecture` taken from its file's name, and the problems found, as
-    (file, where, what)."""
+    """The FPGAs of every fpgas/<family>.json, by ID, each with its `family`
+    taken from its file's name, and the problems found, as (file, where,
+    what)."""
     fpgas, problems = {}, []
     for path in sorted((root / "fpgas").glob("*.json")):
         rel = str(path.relative_to(root))
-        arch = path.stem
-        if arch not in ARCHITECTURES:
-            problems.append((rel, "name", f"{arch!r} isn't one of {sorted(ARCHITECTURES)}."))
+        family = path.stem
+        if family not in FAMILIES:
+            problems.append((rel, "name", f"{family!r} isn't one of {sorted(FAMILIES)}."))
             continue
+        schema_name, prefixes = FAMILIES[family]
         try:
             entries = json.loads(path.read_text())
         except json.JSONDecodeError as e:
             problems.append((rel, f"line {e.lineno}", e.msg))
             continue
-        found = schema_errors(fpgas_schema(arch), entries)
+        found = schema_errors(fpgas_schema(schema_name), entries)
         problems += [(rel, w, t) for w, t in found]
         if found:
             continue
@@ -179,9 +198,11 @@ def load_fpgas(root=ROOT):
             if fid == "$schema":
                 continue
             if fid in fpgas:
-                problems.append((rel, fid, f"Also in fpgas/{fpgas[fid]['architecture']}.json: an FPGA ID is in one file only."))
+                problems.append((rel, fid, f"Also in fpgas/{fpgas[fid]['family']}.json: an FPGA ID is in one file only."))
                 continue
-            fpgas[fid] = {"architecture": arch, **f}
+            if not f["part_number"].startswith(prefixes):
+                problems.append((rel, f"{fid}/part_number", f"{f['part_number']} isn't a {family} part: its part number starts with {' or '.join(prefixes)}."))
+            fpgas[fid] = {"family": family, **f}
     return fpgas, problems
 
 

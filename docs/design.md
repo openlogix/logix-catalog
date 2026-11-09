@@ -19,7 +19,8 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 | A repo of its own, `logix-catalog`, and a first-level product with its own page | Board data changes more often than engine code, contributors shouldn't need the engine repo, and other projects can use the data without the engine |
 | One JSON file per board, named by its ID | A contribution touches one small file; boards copy between the catalog and a project's `boards/` folder as files |
 | One board schema, `logix-board-v1.json`; custom boards are folders of the same files | One format everywhere; no wrapper files |
-| One FPGA schema per family, `logix-fpgas-<architecture>-v1.json` | Each family's toolchain needs its own fields |
+| One FPGA file per family, `fpgas/<family>.json`, named like the chips (`ice40`, `ecp5`, `gw1n`, `gw2a`, `gw5a`, `artix7`, `spartan7`, `zynq7000`); boards never name a family or toolchain | A family is a fact about the chip, and the file's name states it once, so fields it implies (such as yosys's Gowin family and Project X-Ray's family folder) aren't repeated per FPGA. Only the engine knows toolchains (2026-11-08) |
+| Families with the same fields share an FPGA schema, `logix-fpgas-<schema>-v1.json`, named after their toolchain (`ice40`, `ecp5`, `gowin`, `openxc7`) | Their files would have identical schemas: one per family would only repeat it (2026-11-08) |
 | `resources`, a map from port name to a typed resource | Amaranth's and LiteX's term, so imports map 1:1; names are unique because they're port names |
 | Each type with its own fields (`pin`, `red`, `tx`, `leds`, `colors`) | A reader never decodes a pin list by position |
 | One pin gives a plain port, several a vector | Natural for beginners; blinkies are per board anyway |

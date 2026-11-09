@@ -128,38 +128,40 @@ class Catalog(unittest.TestCase):
 
     def test_fpga_files(self):
         self.assertEqual(FPGA_PROBLEMS, [])
-        self.assertEqual(FPGAS["ice40up5k-sg48"]["architecture"], "ice40")
-        self.assertEqual({f["architecture"] for f in FPGAS.values()}, check.ARCHITECTURES)
+        self.assertEqual(FPGAS["ice40up5k-sg48"]["family"], "ice40")
+        self.assertEqual({f["family"] for f in FPGAS.values()}, set(check.FAMILIES))
         part = {"part_number": "P", "size": "1k", "nextpnr_device": "d", "nextpnr_package": "p"}
         ice40 = {"$schema": check.fpgas_schema_url("ice40")}
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp) / "fpgas"
             folder.mkdir()
-            ecp5 = {**part, "nextpnr_speed": "6"}
+            ecp5 = {**part, "part_number": "LFE5U-12F", "nextpnr_speed": "6"}
             (folder / "ecp5.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("ecp5"), "a": ecp5}))
-            (folder / "ice40.json").write_text(json.dumps({**ice40, "a": part, "b": part}))
-            (folder / "gowin.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("ice40"), "g": part}))
-            (folder / "xilinx.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("xilinx"), "B": part}))
-            (folder / "other.json").write_text("{}")
+            (folder / "ice40.json").write_text(json.dumps({**ice40, "a": part, "b": {**part, "part_number": "ICE40HX1K"}}))
+            (folder / "gw1n.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("ice40"), "g": part}))
+            gw2a = {"part_number": "GW1N-1", "size": "1k", "nextpnr_device": "d", "packer_device": "p"}
+            (folder / "gw2a.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("gowin"), "h": gw2a}))
+            (folder / "artix7.json").write_text(json.dumps({"$schema": check.fpgas_schema_url("openxc7"), "B": part}))
+            (folder / "gowin.json").write_text("{}")
             fpgas, found = check.load_fpgas(Path(tmp))
-        self.assertEqual(sorted(fpgas), ["a", "b"])
-        self.assertEqual(fpgas["a"]["architecture"], "ecp5")
+        self.assertEqual(sorted(fpgas), ["a", "b", "h"])
+        self.assertEqual(fpgas["a"]["family"], "ecp5")
+        self.assertEqual(fpgas["h"]["family"], "gw2a")
         self.assertEqual(found, [
-            ("fpgas/gowin.json", "$schema", "'https://www.openlogix.org/schemas/logix-fpgas-gowin-v1.json' was expected"),
-            ("fpgas/gowin.json", "g", "'packer_device' is a required property"),
-            ("fpgas/gowin.json", "g", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
+            ("fpgas/artix7.json", "(file)", "'B' does not match '^(\\\\$schema|[a-z0-9]+(-[a-z0-9]+)*)$'"),
+            ("fpgas/artix7.json", "B", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
+            ("fpgas/gowin.json", "name", "'gowin' isn't one of ['artix7', 'ecp5', 'gw1n', 'gw2a', 'gw5a', 'ice40', 'spartan7', 'zynq7000']."),
+            ("fpgas/gw1n.json", "$schema", "'https://www.openlogix.org/schemas/logix-fpgas-gowin-v1.json' was expected"),
+            ("fpgas/gw1n.json", "g", "'packer_device' is a required property"),
+            ("fpgas/gw1n.json", "g", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
+            ("fpgas/gw2a.json", "h/part_number", "GW1N-1 isn't a gw2a part: its part number starts with GW2A."),
             ("fpgas/ice40.json", "a", "Also in fpgas/ecp5.json: an FPGA ID is in one file only."),
-            ("fpgas/other.json", "name", "'other' isn't one of ['ecp5', 'gowin', 'ice40', 'xilinx']."),
-            ("fpgas/xilinx.json", "(file)", "'B' does not match '^(\\\\$schema|[a-z0-9]+(-[a-z0-9]+)*)$'"),
-            ("fpgas/xilinx.json", "B", "'yosys_arch' is a required property"),
-            ("fpgas/xilinx.json", "B", "'prjxray_family' is a required property"),
-            ("fpgas/xilinx.json", "B", "Additional properties are not allowed ('nextpnr_package' was unexpected)"),
         ])
         # The schemas check fields and IDs.
-        errors = check.schema_errors(check.fpgas_schema("ice40"), {**ice40, "B": {**part, "architecture": "ice40"}})
+        errors = check.schema_errors(check.fpgas_schema("ice40"), {**ice40, "B": {**part, "family": "ice40"}})
         self.assertEqual([w for w, _ in errors], ["(file)", "B"])
         self.assertIn("'B' does not match", errors[0][1])
-        self.assertIn("'architecture' was unexpected", errors[1][1])
+        self.assertIn("'family' was unexpected", errors[1][1])
 
     def test_canonical_format(self):
         text = check.canonical_file({"a": {"b": [1, 2]}, "c": ["x" * 120]})
