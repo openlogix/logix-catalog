@@ -13,6 +13,17 @@
   ],
   "resources": {
     "sys_clk": {"type": "clock", "pin": "35", "mhz": 12},
-    "rgb_led": {"type": "rgb_led", "red": "41", "green": "39", "blue": "40", "active": "low"}
+    "rgb_led": {
+      "type": "rgb_led",
+      "red": "41",
+      "green": "39",
+      "blue": "40",
+      "active": "low",
+      "ai_hints": [
+        "Its pins are the FPGA's RGB LED driver outputs (RGB0 to RGB2), which only sink current.",
+        "Drive them through SB_RGBA_DRV at a low current, each pin from its RGBn output.",
+        "Through the driver, a PWM input of 1 turns an LED on (low is the pin's level)."
+      ]
+    }
   }
 }

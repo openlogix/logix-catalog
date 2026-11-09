@@ -14,6 +14,7 @@ Each board is one file, `boards/<id>.json`. The ID is the file name: lowercase l
 | `variants` | yes | The ways to program the board; the first is the default (see Variants) |
 | `requires` | no | What every design for the board must do (see Requirements) |
 | `resources` | no | What the board wires to FPGA pins, a map from name to resource (see Resources) |
+| `ai_hints` | no | Hints for designs for the whole board (see AI hints); always the last field |
 
 Custom boards use the same layout: a folder of `<id>.json` files, each one board in this format, such as a project's `boards/` folder that a host passes to Logix Engine as `custom_boards_folder`. A custom board with a catalog board's ID replaces it. A board copies between a project and the catalog as a file, name and all, so a custom board becomes a contribution by moving its file into a pull request.
 
@@ -72,6 +73,7 @@ Every resource may also have:
 - `source`: where its facts come from, `{"kind": …, "ref": …}`. Kinds, strongest first: `hardware` (tried on the board), `schematic`, `maker` (the maker's docs, pin files or examples), `litex` and `amaranth` (imported from their board files; `ref` names the file and commit), `user` (reported, not yet checked).
 - `requires`: what must be done for it to work (see Requirements), such as a jumper a clock needs.
 - `user_notes`: warnings and missing information for users.
+- `ai_hints`: hints for designs that use the resource (see AI hints); always its last field.
 
 `active` is `high` or `low`; left out, it's unknown. An LED in a `led_matrix` lights when its pin and a color's pin are both active.
 
@@ -85,6 +87,16 @@ Every resource may also have:
 | `setup` | a person | `text` (what to do), optional `source` | a jumper a clock needs |
 
 A board's requirements apply to every design for it; a resource's apply when a design uses it. Generators include a board's drives, leave out resources that need a setup (so designs work on the board as shipped), and include the drives of the resources they use. `why` and `text` are for people; tools never read them. Only these two types exist; new ones come with a real case.
+
+## AI hints
+
+`ai_hints`, on a board or a resource, is text for whoever writes designs for the board, mainly AI agents, and people too: what its structured fields can't express, such as the iCE40 UltraPlus boards whose RGB LED is on the FPGA's RGB LED driver pins, which a design drives through `SB_RGBA_DRV`, where a 1 turns an LED on even though the pins are active low. Logix Engine returns the hints with the board, unchanged; tools never read them, like `why` and `text`.
+
+- **Only when the structured data isn't enough.** Anything a field can hold goes in a field, or in a new field added with its first real case, never in a hint. Facts the structured data already implies (a board with no clock that works as shipped) and general FPGA knowledge (the FPGA's internal oscillator) aren't repeated.
+- **A list of lines:** each a non-empty single line of at most 90 characters, so it fits on one line of the file, and the list is never empty; with nothing to say, the field is left out.
+- **Last:** always the last field of its board or resource, so it reads as a note on what's above it. `tools/check.py --fix` moves it there.
+- **Advice, not orders:** hints are written as facts and suggestions to weigh, never as instructions to an agent.
+- Only on boards and resources: variants are about programming, requirements have `why` and `text`, and FPGA facts aren't hints.
 
 ## Overlap
 
@@ -100,4 +112,4 @@ The file holds one value per resource, with its source, never a list of reports.
 
 ## Not decided yet
 
-- At which levels (board, resource, field) to keep user and maintainer notes. Until then, boards keep the notes they have: on variants, and `user_notes` on resources.
+- At which levels (board, resource, field) to keep user and maintainer notes. Until then, boards keep the notes they have: on variants, and `user_notes` on resources. (AI hints are settled: on boards and resources, see AI hints.)

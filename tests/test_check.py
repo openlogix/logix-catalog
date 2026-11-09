@@ -121,6 +121,31 @@ class Catalog(unittest.TestCase):
         c["resources"]["led"]["requires"][0]["name"] = "en"
         self.assertEqual(problems(c), [("resources/led/requires/0/name", "Another resource or drive is named en.")])
 
+    def test_ai_hints(self):
+        b = copy.deepcopy(GOOD)
+        b["ai_hints"] = ["A board hint."]
+        b["resources"]["led"]["ai_hints"] = ["A resource hint.", "Another."]
+        self.assertEqual(problems(b), [])
+        # Schema: a non-empty list of non-empty single lines of at most 90
+        # characters, on the board and resources only.
+        for change in [
+            lambda b: b.update(ai_hints=[]),
+            lambda b: b.update(ai_hints="One string."),
+            lambda b: b["ai_hints"].append(""),
+            lambda b: b["ai_hints"].append("x" * 91),
+            lambda b: b["ai_hints"].append("Two\nlines."),
+            lambda b: b["variants"][0].update(ai_hints=["On a variant."]),
+        ]:
+            c = copy.deepcopy(b)
+            change(c)
+            self.assertTrue(problems(c), c)
+        # The canonical format puts them last.
+        first = {"ai_hints": ["h"], "name": "n", "resources": {"led": {"ai_hints": ["h"], "type": "leds"}}}
+        self.assertEqual(
+            check.canonical_file(first),
+            '{\n  "name": "n",\n  "resources": {"led": {"type": "leds", "ai_hints": ["h"]}},\n  "ai_hints": ["h"]\n}\n',
+        )
+
     def test_resources_may_share_pins(self):
         b = copy.deepcopy(GOOD)
         b["resources"]["pmod"] = {"type": "pmod", "pins": ["37", "2", "3", "4", "5", "6", "7", "8"]}

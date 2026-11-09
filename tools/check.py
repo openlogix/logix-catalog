@@ -78,8 +78,22 @@ def canonical(value, indent=0, prefix=""):
     return prefix + open_ + "\n" + ",\n".join(items) + "\n" + " " * indent + close
 
 
+def hints_last(value):
+    """The value with every object's `ai_hints` moved to its end."""
+    if isinstance(value, list):
+        return [hints_last(v) for v in value]
+    if not isinstance(value, dict):
+        return value
+    out = {k: hints_last(v) for k, v in value.items() if k != "ai_hints"}
+    if "ai_hints" in value:
+        out["ai_hints"] = value["ai_hints"]
+    return out
+
+
 def canonical_file(value):
-    return canonical(value) + "\n"
+    """A file's canonical text: `canonical`, with `ai_hints` last in every
+    object."""
+    return canonical(hints_last(value)) + "\n"
 
 
 def schema():
