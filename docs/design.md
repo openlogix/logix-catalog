@@ -16,7 +16,8 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 
 | Decision | Why |
 | --- | --- |
-| A repo of its own, `logix-catalog`, and a first-level product with its own page | Board data changes more often than engine code, contributors shouldn't need the engine repo, and other projects can use the data without the engine |
+| A repo of its own, `logix-catalog`, and a first-level product with its own page | Board data changes more often than engine code, and contributors shouldn't need the engine repo |
+| Every tool, script and agent reads the catalog only through Logix Engine's API; only this repo's maintenance (checker, importers, tests, CI) reads the files (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
 | One JSON file per board, named by its ID | A contribution touches one small file; boards copy between the catalog and a project's `boards/` folder as files |
 | One board schema, `logix-board-v1.json`; custom boards are folders of the same files | One format everywhere; no wrapper files |
 | One FPGA file per family, `fpgas/<family>.json`, named like the chips (`ice40`, `ecp5`, `gw1n`, `gw2a`, `gw5a`, `artix7`, `spartan7`, `zynq7000`); boards never name a family or toolchain | A family is a fact about the chip, and the file's name states it once, so fields it implies (such as yosys's Gowin family and Project X-Ray's family folder) aren't repeated per FPGA. Only the engine knows toolchains (2026-11-08) |

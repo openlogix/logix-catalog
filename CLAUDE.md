@@ -4,7 +4,7 @@ Guidance for Claude working in this repo. Shared Open Logix rules (products, pri
 
 ## What this is
 
-Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA boards: one JSON file per board in `boards/`, the FPGAs in `fpgas/`, one file per FPGA family. Logix Engine builds a pinned catalog release into its binary; other projects can use the data without the engine. Contributors add and fix boards here, never in the engine repo.
+Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA boards: one JSON file per board in `boards/`, the FPGAs in `fpgas/`, one file per FPGA family. Logix Engine builds a pinned catalog release into its binary and serves it: every other tool, script or agent reads the catalog only through the engine's API, never these files (the shared rule, website repo's `CLAUDE.md`, 2026-11-08). Only this repo's own maintenance (the checker, importers, tests and CI) reads and writes the files directly. The board file format stays public for writing boards (custom boards and contributions). Contributors add and fix boards here, never in the engine repo.
 
 [`docs/model.md`](docs/model.md) is the source of truth for the format, and [`docs/design.md`](docs/design.md) for the decisions behind it, importing, and how the engine uses the catalog. Read them before changing the schemas, the checker or the data, and update them in the same change. They replace the design review doc (2026-11-08), which is obsolete.
 
