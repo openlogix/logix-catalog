@@ -19,7 +19,7 @@
       "pin": "35",
       "mhz": 12,
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "From the on-board iCELink's 12 MHz clock output, through jumper J1."
+      "user_notes": "From the on-board iCELink's 12 MHz clock output."
     },
     "rgb_led": {
       "type": "rgb_led",
@@ -28,7 +28,6 @@
       "blue": "39",
       "active": "low",
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "Through jumper block J6.",
       "ai_hints": [
         "Wired to the FPGA's RGB LED driver pads: red RGB1, green RGB2, blue RGB0.",
         "Drive it through SB_RGBA_DRV, the iCE40 UltraPlus's RGB LED driver cell (sink only)."
@@ -46,13 +45,13 @@
       "tx": "6",
       "rx": "4",
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "The on-board iCELink's USB serial port, through jumper J5. Also on PMOD1."
+      "user_notes": "The on-board iCELink's USB serial port, over the USB-C cable. Also on PMOD1."
     },
     "pmod1": {
       "type": "pmod",
       "pins": ["10", "6", "3", "48", "9", "4", "2", "47"],
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "Shared: pins 2 and 8 with the UART (jumper J5), pins 1 and 7 with the micro-USB port."
+      "user_notes": "Shared: pins 2 and 8 with the UART, pins 1 and 7 with the micro-USB port."
     },
     "pmod2": {
       "type": "pmod",
