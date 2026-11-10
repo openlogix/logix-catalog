@@ -6,7 +6,7 @@ the data and code are on [GitHub](https://github.com/openlogix/logix-catalog).
 
 Every FPGA board, described once.
 
-Logix Catalog is the open catalog of FPGA boards behind every Logix tool:
+Logix Catalog is the open catalog of FPGA boards behind every Open Logix tool:
 each board's FPGA, how to program it, and what its pins are wired to, from
 clocks and LEDs to PMOD headers. It's one readable JSON file per board.
 [Logix Engine](https://www.openlogix.org/engine/) builds it in and serves
@@ -32,7 +32,7 @@ it to every tool, yours included.
 The data is free to use, copy and change, under MIT or Apache 2.0. Tools,
 scripts and agents are intended to get it through
 [Logix Engine](https://www.openlogix.org/logix-engine/)'s API, the
-supported interface, which every Logix tool uses. The files' layout may
+supported interface, which every Open Logix tool uses. The files' layout may
 change between releases; the board file format is stable for writing
 boards. This isn't enforced; reading the files directly is at your own
 risk.

@@ -17,7 +17,7 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 | Decision | Why |
 | --- | --- |
 | A repo of its own, `logix-catalog`, and a first-level product with its own page | Board data changes more often than engine code, and contributors shouldn't need the engine repo |
-| Logix's products, scripts and agents read the catalog only through Logix Engine's API; only this repo's maintenance (checker, importers, tests, CI) reads the files. For everyone else that's the intended, supported way, not enforced: the data stays free to use and copy, and reading the files directly is at one's own risk (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
+| Open Logix's products, scripts and agents read the catalog only through Logix Engine's API; only this repo's maintenance (checker, importers, tests, CI) reads the files. For everyone else that's the intended, supported way, not enforced: the data stays free to use and copy, and reading the files directly is at one's own risk (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
 | One JSON file per board, named by its ID | A contribution touches one small file; boards copy between the catalog and a project's `boards/` folder as files |
 | One board schema, `logix-board-v1.json`; custom boards are folders of the same files | One format everywhere; no wrapper files |
 | One FPGA file per family, `fpgas/<family>.json`, named like the chips (`ice40`, `ecp5`, `gw1n`, `gw2a`, `gw5a`, `artix7`, `spartan7`, `zynq7000`); boards never name a family or toolchain | A family is a fact about the chip, and the file's name states it once, so fields it implies (such as yosys's Gowin family and Project X-Ray's family folder) aren't repeated per FPGA. Only the engine knows toolchains (2026-11-08) |
@@ -35,7 +35,7 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 | One common `io_standard` name, translated per FPGA family | Board files stay family-neutral; the checker knows each family's set |
 | One value and one `source` per resource; review settles disagreements | No history of reports to manage; git keeps the history |
 | A board's USB device is board data; matching stays the engine's | Useful facts about the board, while match criteria stay internal to the engine |
-| MIT or Apache 2.0, like every Logix repo | MIT lets GPL-2.0 projects use the data, Apache 2.0 gives a patent grant |
+| MIT or Apache 2.0, like every Open Logix repo | MIT lets GPL-2.0 projects use the data, Apache 2.0 gives a patent grant |
 | Contributions through commits and pull requests | Standard review, nothing special to learn |
 | Motto: "Every FPGA board, described once." | |
 

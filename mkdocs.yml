@@ -3,7 +3,7 @@
 # Pages are in docs/.
 # "Docs" in the name: this is the docs, not the product's main page.
 site_name: Logix Catalog Docs
-site_description: 'Every FPGA board, described once. The open catalog of FPGA boards behind every Logix tool.'
+site_description: 'Every FPGA board, described once. The open catalog of FPGA boards behind every Open Logix tool.'
 site_url: https://openlogix.github.io/logix-catalog/
 repo_url: https://github.com/openlogix/logix-catalog
 repo_name: openlogix/logix-catalog
