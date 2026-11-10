@@ -22,6 +22,7 @@ Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA 
 - Boards that can't be bought anymore, for some time, are dropped (the user's rule).
 - Examples and generated designs use only a board's default configuration (no jumpers or add-ons) unless very explicit; resources that need a jumper have a `setup` requirement, and pins every design must drive are a board's `drive` requirements (`requires`, docs/model.md).
 - `ai_hints` (boards and resources; 2026-11-09): only what the structured data can't express, led by a fact about the board (where it comes from decides, not how many boards share it), with at most a short phrase of context naming the FPGA feature, and no how-to. The rules are in docs/model.md, "AI hints".
+- **The canonical board** (the website repo's `CLAUDE.md` owns the rule, 2026-11-10): `icesugar-1-5` (iCESugar v1.5) is kept as complete and accurate as possible: every pin it wires (its `unclassified` resource makes the list complete), each from its schematic, its maker's files or a hardware test. The checker and tools treat it like every other board. Still to check on a real board: whether jumpers J1 (clock), J5 (UART) and J6 (RGB LED) come fitted; any that don't become `setup` requirements. The 6-pin PMOD4's power positions (5 GND, 6 3.3 V) also need checking.
 - Breaking format changes are fine until the first release; after it, only additions.
 - Releases: dated tags (`yyyy-mm-dd`), not set up yet; the engine will pin one.
 
