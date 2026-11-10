@@ -1,4 +1,8 @@
-# Logix Catalog
+# Logix Catalog Docs
+
+These are Logix Catalog's docs. Its **main page**, what it is and how it's
+used, is [www.openlogix.org/catalog](https://www.openlogix.org/catalog/);
+the data and code are on [GitHub](https://github.com/openlogix/logix-catalog).
 
 Every FPGA board, described once.
 

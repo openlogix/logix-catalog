@@ -1,7 +1,8 @@
 # The Logix Catalog documentation, published to GitHub Pages by
 # .github/workflows/publish-docs.yaml at www.openlogix.org/logix-catalog/.
 # Pages are in docs/.
-site_name: Logix Catalog
+# "Docs" in the name: this is the docs, not the product's main page.
+site_name: Logix Catalog Docs
 site_description: 'Every FPGA board, described once. The open catalog of FPGA boards behind every Logix tool.'
 site_url: https://openlogix.github.io/logix-catalog/
 repo_url: https://github.com/openlogix/logix-catalog

@@ -1,12 +1,12 @@
 # Logix Catalog
 
+**[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
+
 Every FPGA board, described once.
 
-Logix Catalog is the open catalog of FPGA boards behind every Logix tool: each board's FPGA, how to program it, and what its pins are wired to, from clocks and LEDs to PMOD headers. It's one readable JSON file per board. [Logix Engine](https://www.openlogix.org/engine/) builds it in and serves it to every tool, yours included; the data is free to use and copy. See the [Logix Catalog page](https://www.openlogix.org/catalog/).
+Logix Catalog is the open catalog of FPGA boards behind every Logix tool: each board's FPGA, how to program it, and what its pins are wired to, from clocks and LEDs to PMOD headers. It's one readable JSON file per board. [Logix Engine](https://www.openlogix.org/engine/) builds it in and serves it to every tool, yours included; the data is free to use and copy.
 
 **In development.** The format may still change before the first release.
-
-The docs are also published as a website: [www.openlogix.org/logix-catalog](https://www.openlogix.org/logix-catalog/).
 
 ## What's here
 
