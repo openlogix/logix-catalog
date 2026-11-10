@@ -59,10 +59,27 @@ Names the table doesn't know are reported, never guessed. LiteX rarely records L
 
 ## Logix Engine and the catalog
 
-Contributors change boards here, never in the engine repo. Every engine build embeds a catalog, so the engine's startup stays offline. Planned:
+Contributors change boards here, never in the engine repo. The engine
+downloads the catalog as a package, as it downloads its tools (decided
+2026-11-10):
 
-- **Release builds:** the engine repo pins a catalog release (a dated tag), as it pins toolchain packages, and builds it in. `get_engine_info` reports the catalog's version, and frontends show it, such as in the Logix IDE's System Info.
-- **Local builds:** `LOGIX_ENGINE_DEV_CATALOG=<local clone>` at build time embeds a local checkout instead, and `get_engine_info` reports it as local. Edit a board, rebuild the engine, try it in the IDE.
-- **Custom boards:** requests name a folder of board files (`custom_boards_folder`), read with the same code as the catalog.
-- **Later, updates without a new engine:** the engine installs a newer catalog release into its engine folder, like a toolchain package, only when a host asks: it never downloads at startup or upgrades silently. A host can't pick a catalog version; the engine uses the one it has.
-- The engine keeps the code that reads and checks the catalog, and drops its own `catalog/` folder.
+- **The package:** `logix-catalog-<yyyymmdd>.tgz`, built by this repo's
+  `build-pre-release` workflow (`tools/package.py`) into a dated
+  pre-release whenever the data changes on `main`. It holds `boards/`,
+  `fpgas/`, `schemas/`, the licenses and `logix-catalog.json`, and is
+  reproducible: the same files give the same bytes and SHA-256. It's about
+  30 KB, so it arrives first on a new install, and a frontend can list
+  boards while the engine's tools (the `logix-core` package, from
+  [openlogix/logix-core](https://github.com/openlogix/logix-core)) download.
+- **Each engine release pins one catalog release** (its tag, size and
+  SHA-256), as it pins `logix-core`. `get_engine_info` reports the
+  catalog's version, and frontends show it, such as in Logix IDE's System
+  Info. How engines already on users' machines get a newer catalog is the
+  dependency updates discussion's subject.
+- **The engine reads the catalog only from the downloaded package**; it has
+  none built in. Until its first catalog arrives, board lists are empty.
+- **Custom boards:** requests name a folder of board files
+  (`custom_boards_folder`), read with the same code as the catalog.
+- The engine keeps the code that reads and checks the catalog.
+
+Frontends' examples follow [Examples and boards](examples.md).
