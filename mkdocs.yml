@@ -1,0 +1,69 @@
+# The Logix Catalog documentation, published to GitHub Pages by
+# .github/workflows/publish-docs.yaml at www.openlogix.org/logix-catalog/.
+# Pages are in docs/.
+site_name: Logix Catalog
+site_description: 'Every FPGA board, described once. The open catalog of FPGA boards behind every Logix tool.'
+site_url: https://openlogix.github.io/logix-catalog/
+repo_url: https://github.com/openlogix/logix-catalog
+repo_name: openlogix/logix-catalog
+edit_uri: edit/main/docs/
+
+# The generated site (not committed).
+site_dir: _site
+
+# Build tool requirements, not a page.
+exclude_docs: |
+  requirements.txt
+
+theme:
+  name: material
+  # The Logix Catalog icon from the Open Logix brand (openlogix.github.io docs/brand/catalog.svg).
+  logo: assets/logix-catalog.svg
+  favicon: assets/logix-catalog.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: red
+      accent: red
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: red
+      accent: red
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+  features:
+    - navigation.footer
+    - content.code.copy
+
+# The header logo links to the product page; the footer links back to it and the org.
+extra:
+  homepage: https://www.openlogix.org/catalog/
+  social:
+    - icon: material/web
+      link: https://www.openlogix.org/catalog/
+      name: Logix Catalog website
+    - icon: fontawesome/brands/github
+      link: https://github.com/openlogix/logix-catalog
+      name: Logix Catalog on GitHub
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - github-callouts
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Board model: model.md
+  - Design: design.md

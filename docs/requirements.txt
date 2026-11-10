@@ -1,0 +1,4 @@
+# Tools to build the documentation site (see mkdocs.yml).
+mkdocs-material==9.6.14
+# GitHub's callouts (> [!NOTE]), so pages read the same on GitHub.
+markdown-callouts==0.4.0
