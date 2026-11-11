@@ -29,13 +29,10 @@ it to every tool, yours included.
 
 ## Using the data
 
-The data is free to use, copy and change, under MIT or Apache 2.0. Tools,
-scripts and agents are intended to get it through
-[Logix Engine](https://www.openlogix.org/logix-engine/)'s API, the
-supported interface, which every Open Logix tool uses. The files' layout may
-change between releases; the board file format is stable for writing
-boards. This isn't enforced; reading the files directly is at your own
-risk.
+> [!IMPORTANT]
+> **Use it through Logix Engine.** The intended way for tools, scripts and AI agents to read Logix Catalog is [Logix Engine](https://www.openlogix.org/engine/)'s API (`get_catalog`), which downloads the catalog and serves it. The data is free to use and copy under MIT or Apache 2.0, but reading the files directly is at your own risk: their layout may change between releases.
+
+The board file format stays stable for writing boards: your own boards and contributions.
 
 ## Adding or fixing a board
 

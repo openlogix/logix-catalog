@@ -114,9 +114,14 @@ jobs:
           cd _out && sha256sum logix-catalog-*.tgz > ../SHA256SUMS && cd ..
           cat > RELEASE-BODY.txt <<EOT
 
-          **Logix Catalog: every FPGA board, described once.**
+          **Logix Catalog: Every FPGA board, described once.**
 
-          This is the catalog package Logix Engine downloads. Tools are intended to get this data through [Logix Engine](https://www.openlogix.org/engine/)'s API; the files' layout may change between releases.
+          [Main page](https://www.openlogix.org/catalog/) · [Docs](https://www.openlogix.org/logix-catalog/)
+
+          > [!IMPORTANT]
+          > **Use it through Logix Engine.** The intended way for tools, scripts and AI agents to read Logix Catalog is [Logix Engine](https://www.openlogix.org/engine/)'s API (\`get_catalog\`), which downloads the catalog and serves it. The data is free to use and copy under MIT or Apache 2.0, but reading the files directly is at your own risk: their layout may change between releases.
+
+          Each release is one package, \`logix-catalog-${PACKAGE_TAG}.tgz\`: the board files, the FPGA files and their schemas, which Logix Engine downloads.
 
           ### Build info
 
