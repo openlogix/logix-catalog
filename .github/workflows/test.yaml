@@ -1,10 +1,14 @@
-# Checks the catalog on every push and pull request, and manually.
+# Checks the catalog on every push and pull request, daily and manually.
 name: test
 
 on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    # Daily at the start of the UTC day, to catch breakage from new
+    # runner images or tool versions even when the data doesn't change.
+    - cron: "0 0 * * *"
 
 concurrency:
   group: test-${{ github.ref }}

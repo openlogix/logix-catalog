@@ -65,7 +65,9 @@ downloads the catalog as a package, as it downloads its tools (decided
 
 - **The package:** `logix-catalog-<yyyymmdd>.tgz`, built by this repo's
   `build-pre-release` workflow (`tools/package.py`) into a dated
-  pre-release whenever the data changes on `main`. It holds `boards/`,
+  pre-release on every change on `main` and daily; the 5 newest
+  pre-releases are kept, and a release an engine release ships with is
+  made stable, so it stays. It holds `boards/`,
   `fpgas/`, `schemas/`, the licenses and `logix-catalog.json`, and is
   reproducible: the same files give the same bytes and SHA-256. It's about
   30 KB, so it arrives first on a new install, and a frontend can list
