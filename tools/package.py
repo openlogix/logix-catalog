@@ -68,7 +68,7 @@ def pack(items: list[tuple[str, bytes]]) -> bytes:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", required=True, help="folder for the .tgz and its .json")
+    ap.add_argument("--out", required=True, help="folder for the .tgz")
     ap.add_argument("--package-tag", default="", help="yyyymmdd for the file name")
     args = ap.parse_args()
 
@@ -78,9 +78,7 @@ def main() -> None:
     tag = f"-{args.package_tag}" if args.package_tag else ""
     tgz = out / f"logix-catalog{tag}.tgz"
     tgz.write_bytes(data)
-    info = {"file": tgz.name, "size": len(data), "sha256": sha256(data)}
-    (out / "logix-catalog.json").write_text(json.dumps(info, indent=2) + "\n")
-    print(f"{tgz.name}: {info['size']} bytes, sha256 {info['sha256']}")
+    print(f"{tgz.name}: {len(data)} bytes, sha256 {sha256(data)}")
 
 
 if __name__ == "__main__":

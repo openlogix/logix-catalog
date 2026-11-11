@@ -145,6 +145,5 @@ jobs:
           body_path: RELEASE-BODY.txt
           files: |
             _out/logix-catalog-${{ env.PACKAGE_TAG }}.tgz
-            _out/logix-catalog.json
             SHA256SUMS
             BUILD-INFO.json
