@@ -5,11 +5,13 @@
 # (the run fails instead).
 #
 # Runs on every push to main, daily and manually, like every Open Logix
-# pre-release build, and keeps the 5 newest pre-releases (the shared
-# cleanup action). An engine release that ships pins a stable release
-# (pre-release unticked), which the cleanup never deletes.
+# pre-release build. Old pre-releases are deleted by the shared policy;
+# an engine release that ships pins a stable release (pre-release
+# unticked), which is never deleted.
 #
-# The steps use the shared Open Logix actions in openlogix/.github.
+# The shared parts are Open Logix actions in openlogix/.github (tested
+# there): start-pre-release and publish-pre-release, which also writes the
+# standard release text and applies the pre-release policy.
 
 name: build-pre-release
 
@@ -33,13 +35,6 @@ concurrency:
   group: build-pre-release
   cancel-in-progress: true
 
-env:
-  RELEASE_TAG: ""
-  PACKAGE_TAG: ""
-  REPO: ""
-  REPO_BRANCH: ""
-  REPO_COMMIT: ""
-
 jobs:
   pre-release:
     runs-on: ubuntu-latest
@@ -56,102 +51,30 @@ jobs:
       - name: Check the catalog
         run: scripts/test.sh
 
-      - name: Get release and package tags
-        uses: openlogix/.github/actions/get-release-and-package-tags@v1
+      # The build details go in BUILD-INFO.json, beside the package, not
+      # inside it: the package stays reproducible.
+      - name: Start the pre-release
+        uses: openlogix/.github/actions/start-pre-release@main
         with:
-          release-tag-var: RELEASE_TAG
-          package-tag-var: PACKAGE_TAG
-
-      - name: Ensure no conflicting release
-        uses: openlogix/.github/actions/ensure-no-conflicting-release@v1
-        with:
-          release-tag: ${{ env.RELEASE_TAG }}
-
-      - name: Get repo info
-        uses: openlogix/.github/actions/get-repo-info@v1
-        with:
-          repo-dir: .
-          repo-var: REPO
-          branch-var: REPO_BRANCH
-          commit-var: REPO_COMMIT
+          package-name: logix-catalog
+          description: Logix Catalog's boards and FPGAs, as Logix Engine downloads them.
 
       - name: Pack the catalog
         run: python3 tools/package.py --out _out --package-tag "$PACKAGE_TAG"
 
-      # The build details live here, beside the package, not inside it: the
-      # package stays reproducible.
-      - name: Create build info
+      - name: Write the release content
         run: |
-          cat > BUILD-INFO.json <<EOT
-          {
-            "package-name": "logix-catalog",
-            "description": "Logix Catalog's boards and FPGAs, as Logix Engine downloads them.",
-            "repo": "${REPO}",
-            "repo-branch": "${REPO_BRANCH}",
-            "repo-commit": "${REPO_COMMIT}",
-            "release-tag": "$RELEASE_TAG",
-            "package-tag": "$PACKAGE_TAG",
-            "build-time": "$(date +'%Y-%m-%d %H:%M:%S %Z')",
-            "builder-workflow": "${{ github.workflow }}",
-            "workflow-run-id": "${{ github.run_id }}",
-            "workflow-run-number": "${{ github.run_number }}"
-          }
-          EOT
-
-      - name: Format build info json file in-place
-        uses: openlogix/.github/actions/format-json-file@v1
-        with:
-          json-file: BUILD-INFO.json
-
-      - name: Convert json build info to text
-        uses: openlogix/.github/actions/json-to-text@v1
-        with:
-          input-json: BUILD-INFO.json
-          output-text: build-info.txt
-
-      - name: Prepare release text
-        run: |
-          cd _out && sha256sum logix-catalog-*.tgz > ../SHA256SUMS && cd ..
-          cat > RELEASE-BODY.txt <<EOT
-
-          **Logix Catalog: Every FPGA board, described once.**
-
-          [Main page](https://www.openlogix.org/catalog/) · [Docs](https://www.openlogix.org/logix-catalog/)
-
-          > [!IMPORTANT]
-          > **Use it through Logix Engine.** The intended way for tools, scripts and AI agents to read Logix Catalog is [Logix Engine](https://www.openlogix.org/engine/)'s API (\`get_catalog\`), which downloads the catalog and serves it. The data is free to use and copy under MIT or Apache 2.0, but reading the files directly is at your own risk: their layout may change between releases.
-
+          cat > CONTENT.md <<EOF
           Each release is one package, \`logix-catalog-${PACKAGE_TAG}.tgz\`: the board files, the FPGA files and their schemas, which Logix Engine downloads.
+          EOF
 
-          ### Build info
-
-          \`\`\`
-          $(cat build-info.txt)
-          \`\`\`
-
-          ### About these releases
-
-          - Releases are created daily with a \`pre-release\` status, and only the newest ones (about 5) are kept, unless set to be \`stable\`.
-          - An engine release that ships pins a stable release, which is never deleted.
-          - To make a pre-release stable, edit it manually and change its status from \`Pre-release\` to \`None\`.
-
-          ### Checksums
-
-          \`\`\`
-          $(cat SHA256SUMS)
-          \`\`\`
-          EOT
-          cat -n RELEASE-BODY.txt
-
-      - name: Cleanup old pre-releases
-        uses: openlogix/.github/actions/cleanup-old-prereleases@v1
-
-      - name: Create GitHub pre-release
-        uses: openlogix/.github/actions/create-pre-release@v1
+      - name: Publish the pre-release
+        uses: openlogix/.github/actions/publish-pre-release@main
         with:
-          release_tag: ${{ env.RELEASE_TAG }}
-          body_path: RELEASE-BODY.txt
+          title: "Logix Catalog: Every FPGA board, described once."
+          links: "[Main page](https://www.openlogix.org/catalog/) · [Docs](https://www.openlogix.org/logix-catalog/)"
+          engine-note: catalog
+          content-file: CONTENT.md
+          about-bullets: An engine release that ships pins a stable release, which is never deleted.
           files: |
             _out/logix-catalog-${{ env.PACKAGE_TAG }}.tgz
-            SHA256SUMS
-            BUILD-INFO.json
