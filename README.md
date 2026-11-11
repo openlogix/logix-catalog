@@ -2,9 +2,9 @@
 
 **[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
 
-[![test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&label=test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
-[![build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&label=build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
-[![docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&label=docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
+[![test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&event=schedule&label=test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
+[![build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&event=schedule&label=build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
+[![docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&event=schedule&label=docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
 
 Every FPGA board, described once.
 
