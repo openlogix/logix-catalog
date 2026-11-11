@@ -2,9 +2,13 @@
 
 **[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
 
+[![test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&label=test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
+[![build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&label=build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
+[![docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&label=docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
+
 Every FPGA board, described once.
 
-Logix Catalog is the open catalog of FPGA boards behind every Open Logix tool: each board's FPGA, how to program it, and what its pins are wired to, from clocks and LEDs to PMOD headers. It's one readable JSON file per board. [Logix Engine](https://www.openlogix.org/engine/) builds it in and serves it to every tool, yours included; the data is free to use and copy.
+Logix Catalog is the open catalog of FPGA boards behind every Open Logix tool: each board's FPGA, how to program it, and what its pins are wired to, from clocks and LEDs to PMOD headers. It's one readable JSON file per board. [Logix Engine](https://www.openlogix.org/engine/) downloads it and serves it to every tool, yours included; the data is free to use and copy.
 
 **In development.** The format may still change before the first release.
 
