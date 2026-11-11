@@ -69,8 +69,8 @@ downloads the catalog as a package, as it downloads its tools (decided
   pre-releases are kept, and a release an engine release ships with is
   made stable, so it stays. It holds `boards/`,
   `fpgas/`, `schemas/`, the licenses and `logix-catalog.json`, and is
-  reproducible: the same files give the same bytes and SHA-256. It's about
-  30 KB, so it arrives first on a new install, and a frontend can list
+  reproducible: the same files give the same bytes and SHA-256. It's small,
+  so it arrives first on a new install, and a frontend can list
   boards while the engine's tools (the `logix-core` package, from
   [openlogix/logix-core](https://github.com/openlogix/logix-core)) download.
 - **Each engine release pins one catalog release** (its tag, size and
