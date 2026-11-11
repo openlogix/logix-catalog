@@ -1,10 +1,15 @@
-# Logix Catalog
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://www.openlogix.org/brand/readme/catalog-dark.svg">
+  <img alt="Logix Catalog" src="https://www.openlogix.org/brand/readme/catalog-light.svg" height="96">
+</picture>
 
-**[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
+[![License: MIT or Apache 2.0](https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue)](#license)
 
 [![test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&event=schedule&label=test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
 [![build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&event=schedule&label=build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
 [![docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&event=schedule&label=docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
+
+**[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
 
 Every FPGA board, described once.
 
