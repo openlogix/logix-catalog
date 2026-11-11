@@ -116,21 +116,24 @@ jobs:
 
           **Logix Catalog: every FPGA board, described once.**
 
-          This is the catalog package Logix Engine downloads. Tools are
-          intended to get this data through
-          [Logix Engine](https://www.openlogix.org/engine/)'s API; the
-          files' layout may change between releases.
-
-          ### Checksums
-
-          \`\`\`
-          $(cat SHA256SUMS)
-          \`\`\`
+          This is the catalog package Logix Engine downloads. Tools are intended to get this data through [Logix Engine](https://www.openlogix.org/engine/)'s API; the files' layout may change between releases.
 
           ### Build info
 
           \`\`\`
           $(cat build-info.txt)
+          \`\`\`
+
+          ### About these releases
+
+          - Releases are created daily with a \`pre-release\` status, and only the newest ones (about 5) are kept, unless set to be \`stable\`.
+          - An engine release that ships pins a stable release, which is never deleted.
+          - To make a pre-release stable, edit it manually and change its status from \`Pre-release\` to \`None\`.
+
+          ### Checksums
+
+          \`\`\`
+          $(cat SHA256SUMS)
           \`\`\`
           EOT
           cat -n RELEASE-BODY.txt
