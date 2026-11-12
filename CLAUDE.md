@@ -22,6 +22,8 @@ Logix Catalog ("Every FPGA board, described once.") is the open catalog of FPGA 
 
 ## Rules
 
+**Repo type: dependency** (topic `openlogix-dependency`; the website repo's `CLAUDE.md`, Repo types, owns the policy): Logix Engine downloads its releases as its remote config names them, and they can be dependencies of components outside Open Logix too.
+
 - Keep facts true: every value comes from a source (the board's maker, its schematic, LiteX or Amaranth board files, hardware tests). Record the source in `source` for new facts. Never guess pins or polarity; leave unknowns out.
 - Boards that can't be bought anymore, for some time, are dropped (the user's rule).
 - Examples and generated designs use only a board's default configuration (no jumpers or add-ons) unless very explicit; resources that need a jumper have a `setup` requirement, and pins every design must drive are a board's `drive` requirements (`requires`, docs/model.md).
