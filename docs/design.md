@@ -76,8 +76,10 @@ downloads the catalog as a package, as it downloads its tools (decided
 - **Each engine release pins one catalog release** (its tag, size and
   SHA-256), as it pins `logix-core`. `get_engine_info` reports the
   catalog's version, and frontends show it, such as in Logix IDE's System
-  Info. How engines already on users' machines get a newer catalog is the
-  dependency updates discussion's subject.
+  Info. Engines already on users' machines will get a newer catalog
+  without an engine release, once the engine's remote config names it (a
+  stable release, tested with the engine first; designed, not implemented
+  yet).
 - **The engine reads the catalog only from the downloaded package**; it has
   none built in. Until its first catalog arrives, board lists are empty.
 - **Custom boards:** requests name a folder of board files
