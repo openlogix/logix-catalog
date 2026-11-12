@@ -7,9 +7,9 @@
 
 [![License: MIT or Apache 2.0](https://img.shields.io/badge/License-MIT%20or%20Apache%202.0-blue)](#license)
 
-[![test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&label=test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
-[![build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&label=build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
-[![docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&label=docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
+[![catalog-test](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/test.yaml?branch=main&label=catalog-test)](https://github.com/openlogix/logix-catalog/actions/workflows/test.yaml)
+[![catalog-build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&label=catalog-build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
+[![catalog-docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&label=catalog-docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
 
 **[Main page](https://www.openlogix.org/catalog/)** · [Docs](https://www.openlogix.org/logix-catalog/) · GitHub (here)
 
