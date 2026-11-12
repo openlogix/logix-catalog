@@ -19,6 +19,8 @@ Logix Catalog is the open catalog of FPGA boards behind every Open Logix tool: e
 
 **In development.** The format may still change before the first release.
 
+**Problems or ideas?** Report them in [Logix Engine's issues](https://github.com/openlogix/logix-engine/issues/new/choose): this repo takes no issues. Security problems: report them privately, as [SECURITY.md](https://github.com/openlogix/.github/blob/main/SECURITY.md) says.
+
 ## What's here
 
 - [`boards/`](boards/): one file per board, `boards/<id>.json`.
