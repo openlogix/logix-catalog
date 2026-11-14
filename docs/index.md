@@ -18,6 +18,8 @@ it to every tool, yours included.
 
 | Page | What it covers |
 | --- | --- |
+| [Predefined boards](boards.md) | Every board in the catalog, by FPGA family: its FPGA, how it's programmed and what's on it |
+| [Supported FPGAs](fpgas.md) | Every FPGA Logix Engine builds for, by family, and the boards that use each |
 | [Board model](model.md) | How a board is described: its file, variants, resources, requirements and AI hints |
 | [Design](design.md) | Why the catalog is shaped this way, how it grows, and how Logix Engine uses it |
 
