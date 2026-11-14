@@ -16,7 +16,7 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 
 | Decision | Why |
 | --- | --- |
-| A repo of its own, `logix-catalog`, and a first-level product with its own page | Board data changes more often than engine code, and contributors shouldn't need the engine repo |
+| A repo of its own, `logix-catalog`, with its own docs site; no product page, since it's the board data inside Logix Engine, not a product (2026-11-14) | Board data changes more often than engine code, and contributors shouldn't need the engine repo |
 | Open Logix's products, scripts and agents read the catalog only through Logix Engine's API; only this repo's maintenance (checker, importers, tests, CI) reads the files. For everyone else that's the intended, supported way, not enforced: the data stays free to use and copy, and reading the files directly is at one's own risk (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
 | One JSON file per board, named by its ID | A contribution touches one small file; boards copy between the catalog and a project's `boards/` folder as files |
 | One board schema, `logix-board-v1.json`; custom boards are folders of the same files | One format everywhere; no wrapper files |
@@ -65,21 +65,24 @@ downloads the catalog as a package, as it downloads its tools (decided
 
 - **The package:** `logix-catalog-<yyyymmdd>.tgz`, built by this repo's
   `build-pre-release` workflow (`tools/package.py`) into a dated
-  pre-release on every change on `main` and daily; the 5 newest
-  pre-releases are kept, and a release an engine release ships with is
-  made stable, so it stays. It holds `boards/`,
+  pre-release on every change on `main` and daily. Old pre-releases are
+  deleted by the shared policy: one stays while a remote config on `main`
+  names it, or while it's among the 5 newest; stable releases are never
+  deleted. It holds `boards/`,
   `fpgas/`, `schemas/`, the licenses and `logix-catalog.json`, and is
   reproducible: the same files give the same bytes and SHA-256. It's small,
   so it arrives first on a new install, and a frontend can list
   boards while the engine's tools (the `logix-core` package, from
   [openlogix/logix-core](https://github.com/openlogix/logix-core)) download.
-- **Each engine release pins one catalog release** (its tag, size and
-  SHA-256), as it pins `logix-core`. `get_engine_info` reports the
-  catalog's version, and frontends show it, such as in Logix IDE's System
-  Info. Engines already on users' machines will get a newer catalog
-  without an engine release, once the engine's remote config names it (a
-  stable release, tested with the engine first; designed, not implemented
-  yet).
+- **The engine's remote config names one catalog release**, as it names
+  `logix-core`: `remote-config/logix-engine/<version>/` in the engine's
+  repo, one file per channel (`prod.jsonc`, what users get; `dev.jsonc`,
+  when development needs another). The engine checks the download against
+  the release's `SHA256SUMS`. A new catalog reaches engines already on
+  users' machines by a pull request to that config, with no engine
+  release; a prod config names only stable releases, tested with the
+  engine first. `get_engine_info` reports the catalog's version, and
+  frontends show it, such as in Logix IDE's System Info.
 - **The engine reads the catalog only from the downloaded package**; it has
   none built in. Until its first catalog arrives, board lists are empty.
 - **Custom boards:** requests name a folder of board files
