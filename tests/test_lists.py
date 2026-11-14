@@ -18,7 +18,7 @@ class ListsTest(unittest.TestCase):
     def test_every_fpga_is_listed(self):
         fpgas, _ = lists.load()
         page = lists.fpgas_page()
-        rows = [line for line in page.splitlines() if line.startswith("| ") and not line.startswith(("| FPGA", "| ---"))]
+        rows = [line for line in page.splitlines() if line.startswith("| <span")]
         self.assertEqual(len(rows), sum(len(ids) for ids in fpgas.values()))
         for ids in fpgas.values():
             for fpga in ids.values():

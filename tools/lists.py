@@ -127,12 +127,16 @@ def boards_page(root=ROOT):
         "This list follows the catalog's newest version: a board added recently reaches Open Logix "
         "tools with their next catalog update.",
     ]
+    lines += ["", "| FPGA family | Maker | Boards |", "| --- | --- | --- |"]
+    for family, (name, maker) in FAMILY_NAMES.items():
+        if by_family[family]:
+            lines.append(f"| [{name}](#{family}) | {maker} | {len(by_family[family])} |")
     for family, (name, maker) in FAMILY_NAMES.items():
         if not by_family[family]:
             continue
         lines += [
             "",
-            f"## {name}",
+            f"## {name} {{ #{family} }}",
             "",
             f"{maker} · {plural(len(by_family[family]), 'board')}",
             "",
@@ -165,11 +169,17 @@ def fpgas_page(root=ROOT):
         "*Size* is the FPGA's logic capacity as its maker names it, such as 5k for about 5,000 "
         "logic cells. *Boards* are the predefined boards with that FPGA.",
     ]
+    family_of = {fpga_id: family for family, ids in fpgas.items() for fpga_id in ids}
+    board_count = collections.Counter(family_of[board["fpga_id"]] for board in boards.values())
+    lines += ["", "| FPGA family | Maker | FPGAs | Predefined boards |", "| --- | --- | --- | --- |"]
+    for family, (name, maker) in FAMILY_NAMES.items():
+        boards_link = f"[{board_count[family]}](boards.md#{family})" if board_count[family] else "0"
+        lines.append(f"| [{name}](#{family}) | {maker} | {len(fpgas[family])} | {boards_link} |")
     for family, (name, maker) in FAMILY_NAMES.items():
         ids = fpgas[family]
         lines += [
             "",
-            f"## {name}",
+            f"## {name} {{ #{family} }}",
             "",
             f"{maker} · {plural(len(ids), 'FPGA')}",
             "",
