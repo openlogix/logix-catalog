@@ -72,7 +72,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Predefined boards: boards.md
+  - Supported boards: boards.md
   - Supported FPGAs: fpgas.md
   - Board model: model.md
   - Design: design.md

@@ -1,6 +1,6 @@
 """The docs site's board and FPGA lists, written from the catalog's files.
 
-Two Markdown pages for people: "Predefined boards" (boards.md) and
+Two Markdown pages for people: "Supported boards" (boards.md) and
 "Supported FPGAs" (fpgas.md). tools/mkdocs_hooks.py adds them to the docs
 site at build time, so they always match the catalog on main and are never
 committed. Reading the files directly is this repo's own maintenance (the
@@ -112,7 +112,7 @@ def boards_page(root=ROOT):
     for board_id, board in boards.items():
         by_family[family_of[board["fpga_id"]]].append((board_id, board))
     lines = [
-        "# Predefined boards",
+        "# Supported boards",
         "",
         f"These are the boards Logix Catalog describes today: {len(boards)} boards, with FPGAs "
         f"from {len(by_family)} families. Open Logix tools such as Logix IDE list them for you, "
@@ -120,7 +120,7 @@ def boards_page(root=ROOT):
         "",
         "> [!TIP]",
         "> **Your board isn't here? Add your own.** Describe it in one file, in the catalog's "
-        f"[board format](model.md), and your tool uses it like a predefined board, with any of the "
+        f"[board format](model.md), and your tool uses it like a supported board, with any of the "
         f"[supported FPGAs](fpgas.md). In Logix IDE, see [Your own boards]({IDE_OWN_BOARDS}). "
         f"To add it to the catalog for everyone, send the file as a [pull request]({CONTRIBUTE}).",
         "",
@@ -164,14 +164,14 @@ def fpgas_page(root=ROOT):
         f"Logix Engine builds designs for every FPGA here: {total} FPGAs in {len(fpgas)} families, "
         "every one the open source FPGA tools it downloads (Yosys, nextpnr and openXC7) support. "
         "A board with any of them works the same way, whether it's one of the "
-        "[predefined boards](boards.md) or your own.",
+        "[supported boards](boards.md) or your own.",
         "",
         "*Size* is the FPGA's logic capacity as its maker names it, such as 5k for about 5,000 "
-        "logic cells. *Boards* are the predefined boards with that FPGA.",
+        "logic cells. *Boards* are the supported boards with that FPGA.",
     ]
     family_of = {fpga_id: family for family, ids in fpgas.items() for fpga_id in ids}
     board_count = collections.Counter(family_of[board["fpga_id"]] for board in boards.values())
-    lines += ["", "| FPGA family | Maker | FPGAs | Predefined boards |", "| --- | --- | --- | --- |"]
+    lines += ["", "| FPGA family | Maker | FPGAs | Supported boards |", "| --- | --- | --- | --- |"]
     for family, (name, maker) in FAMILY_NAMES.items():
         boards_link = f"[{board_count[family]}](boards.md#{family})" if board_count[family] else "0"
         lines.append(f"| [{name}](#{family}) | {maker} | {len(fpgas[family])} | {boards_link} |")

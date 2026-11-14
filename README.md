@@ -11,7 +11,7 @@
 [![catalog-build](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/build-pre-release.yaml?branch=main&label=catalog-build)](https://github.com/openlogix/logix-catalog/actions/workflows/build-pre-release.yaml)
 [![catalog-docs](https://img.shields.io/github/actions/workflow/status/openlogix/logix-catalog/publish-docs.yaml?branch=main&label=catalog-docs)](https://github.com/openlogix/logix-catalog/actions/workflows/publish-docs.yaml)
 
-**[Docs](https://www.openlogix.org/logix-catalog/)** · [Predefined boards](https://www.openlogix.org/logix-catalog/boards/) · [Supported FPGAs](https://www.openlogix.org/logix-catalog/fpgas/) · GitHub (here)
+**[Docs](https://www.openlogix.org/logix-catalog/)** · [Supported boards](https://www.openlogix.org/logix-catalog/boards/) · [Supported FPGAs](https://www.openlogix.org/logix-catalog/fpgas/) · GitHub (here)
 
 Every FPGA board, described once.
 
