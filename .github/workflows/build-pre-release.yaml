@@ -72,7 +72,7 @@ jobs:
         uses: openlogix/.github/actions/publish-pre-release@main
         with:
           title: "Logix Catalog: Every FPGA board, described once."
-          links: "[Main page](https://www.openlogix.org/catalog/) · [Docs](https://www.openlogix.org/logix-catalog/)"
+          links: "[Docs](https://www.openlogix.org/logix-catalog/) · [GitHub](https://github.com/openlogix/logix-catalog)"
           engine-note: catalog
           content-file: CONTENT.md
           about-bullets: An engine release that ships pins a stable release, which is never deleted.

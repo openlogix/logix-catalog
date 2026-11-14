@@ -40,13 +40,14 @@ theme:
     - navigation.footer
     - content.code.copy
 
-# The header logo links to the product page; the footer links back to it and the org.
+# Logix Catalog has no product page (it's the board data inside Logix Engine):
+# the header logo links to its GitHub repo; the footer links the repo and the org.
 extra:
-  homepage: https://www.openlogix.org/catalog/
+  homepage: https://github.com/openlogix/logix-catalog
   social:
     - icon: material/web
-      link: https://www.openlogix.org/catalog/
-      name: Logix Catalog website
+      link: https://www.openlogix.org/
+      name: Open Logix website
     - icon: fontawesome/brands/github
       link: https://github.com/openlogix/logix-catalog
       name: Logix Catalog on GitHub
