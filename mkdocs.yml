@@ -52,6 +52,10 @@ extra:
       link: https://github.com/openlogix/logix-catalog
       name: Logix Catalog on GitHub
 
+# Headings (and screenshots) styled the same in every Open Logix docs site.
+extra_css:
+  - stylesheets/extra.css
+
 plugins:
   - search
 
