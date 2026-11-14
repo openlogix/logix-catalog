@@ -5,7 +5,7 @@ These are Logix Catalog's docs; the data and code are on
 start with the [supported boards](boards.md) and the
 [supported FPGAs](fpgas.md).
 
-Every FPGA board, described once.
+**Every FPGA board, described once.**
 
 Logix Catalog is the open catalog of FPGA boards behind every Open Logix tool:
 each board's FPGA, how to program it, and what its pins are wired to, from
