@@ -62,6 +62,14 @@ jobs:
       - name: Pack the catalog
         run: python3 tools/package.py --out _out --package-tag "$PACKAGE_TAG"
 
+      # Every package a CI build publishes is scanned (the website repo's
+      # CLAUDE.md, Shared CI).
+      - name: Scan the package for viruses
+        uses: openlogix/.github/actions/scan-files-for-viruses@main
+        with:
+          file-patterns: |
+            _out/logix-catalog-*.tgz
+
       - name: Write the release content
         run: |
           cat > CONTENT.md <<EOF
