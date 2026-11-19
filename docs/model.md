@@ -62,7 +62,7 @@ The order of resources in the map means nothing, as JSON objects are unordered: 
 | `led_matrix` | `leds` (a pin per LED), `colors` (`red`, `green`, `blue`), `active` | the ButterStick's seven RGB LEDs |
 | `buttons` | `pins`, `active` | `"btn": {"type": "buttons", "pins": ["10"], "active": "low"}` |
 | `switches` | `pins`, `active` | like buttons |
-| `uart` | `tx`, `rx`, optional `rts`, `cts` (`tx` is the FPGA's output) | `"uart": {"type": "uart", "tx": "9", "rx": "6"}` |
+| `uart` | `tx`, `rx`, optional `rts`, `cts` (`tx` is the FPGA's output), optional `usb_interface` (see below) | `"uart": {"type": "uart", "tx": "9", "rx": "6"}` |
 | `pmod` | `pins`: the 8 signal pins in header order, 1 to 4 then 7 to 10 | `"pmod1a": {"type": "pmod", "pins": ["4", "2", "47", "45", "3", "48", "46", "44"]}` |
 | `header` | `pins`: every position in order, `null` for power and ground | headers that aren't PMODs |
 | `unclassified` | `pins`: every FPGA pin the board wires to something no other resource describes | see Partial knowledge |
@@ -74,6 +74,8 @@ Every resource may also have:
 - `requires`: what must be done for it to work (see Requirements), such as a jumper a clock needs.
 - `user_notes`: warnings and missing information for users.
 - `ai_hints`: hints for designs that use the resource (see AI hints); always its last field.
+
+A `uart` wired to the board's own USB chip, the serial port a computer sees over the board's USB cable, may have `usb_interface`: the USB interface that carries it on the board's USB device (the one its variants' `usb` filters match), such as `1` for an FTDI chip's second channel, whose first programs the board (decided 2026-11-19, for the Serial Monitor). With it, Logix Engine finds the board's serial port by itself, even when the computer lists several for the board. Left out when the chip has a single serial port (the engine then takes the only one) or when it isn't known; a UART on a header, with no USB chip, has none. Its `user_notes` still say, for people, which port it is.
 
 `active` is `high` or `low`; left out, it's unknown. An LED in a `led_matrix` lights when its pin and a color's pin are both active.
 
