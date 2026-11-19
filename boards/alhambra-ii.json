@@ -26,7 +26,7 @@
         "kind": "maker",
         "ref": "github.com/FPGAwars/Alhambra-II-FPGA examples/picorv32/picosoc/demo.pcf"
       },
-      "user_notes": "The FTDI chip's second channel: a USB serial port, over the board's USB cable."
+      "user_notes": "The FTDI chip's second channel, USB interface 1, over the board's USB cable: computers list two serial ports for the board, and this is the one for interface 1 (interface 0 programs the board)."
     }
   }
 }
