@@ -41,7 +41,7 @@
       "rx": "A9",
       "io_standard": "LVCMOS33",
       "source": {"kind": "maker", "ref": "github.com/Digilent/digilent-xdc Arty-A7-35-Master.xdc"},
-      "user_notes": "The FTDI chip's second channel: a USB serial port, over the micro-USB cable."
+      "user_notes": "The FTDI chip's second channel, USB interface 1, over the micro-USB cable: computers list two serial ports for the board, and this is the one for interface 1 (interface 0 programs the board)."
     }
   }
 }
