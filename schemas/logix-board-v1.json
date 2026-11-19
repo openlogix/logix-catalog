@@ -371,6 +371,12 @@
         "cts": {
           "$ref": "#/$defs/Pin"
         },
+        "usb_interface": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255,
+          "description": "The USB interface that carries this serial port on the board's USB device (the one its variants' usb filters match), when that device has several interfaces, such as 1 for an FTDI chip's second channel. Lets tools open the right serial port. Omitted when unknown."
+        },
         "io_standard": {
           "$ref": "#/$defs/IoStandard"
         },

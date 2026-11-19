@@ -22,6 +22,7 @@
       "type": "uart",
       "tx": "61",
       "rx": "62",
+      "usb_interface": 1,
       "source": {
         "kind": "maker",
         "ref": "github.com/FPGAwars/Alhambra-II-FPGA examples/picorv32/picosoc/demo.pcf"
