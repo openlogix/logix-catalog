@@ -37,6 +37,10 @@ class ListsTest(unittest.TestCase):
         self.assertIn("12 MHz clock", lists.on_board(board))
         self.assertIn("RGB LED", lists.on_board(board))
 
+    def test_buttons_are_listed(self):
+        _, boards = lists.load()
+        self.assertIn("1 button", lists.on_board(boards["soan-papdi"]))
+
     def test_sizes_sort_by_number(self):
         self.assertEqual(sorted(["25k", "384", "1k", "5k"], key=lists.size_key), ["384", "1k", "5k", "25k"])
 

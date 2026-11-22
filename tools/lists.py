@@ -96,6 +96,9 @@ def on_board(board):
     switches = sum(len(r["pins"]) for r in by_type["switches"])
     if switches:
         parts.append(plural(switches, "switch").replace("switchs", "switches"))
+    buttons = sum(len(r["pins"]) for r in by_type["buttons"])
+    if buttons:
+        parts.append(plural(buttons, "button"))
     if by_type["pmod"]:
         parts.append(f"{len(by_type['pmod'])} PMOD")
     if by_type["header"]:
