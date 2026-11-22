@@ -6,7 +6,7 @@ Why Logix Catalog is shaped the way it is, how it grows, and how Logix Engine us
 
 - **Readable.** A person opens a board's file and understands it without reading docs first.
 - **Partial knowledge.** The FPGA is always fully known. Everything else is either listed, so known, or not known yet.
-- **Grows in small steps.** Users, board makers, developers and importers add facts one at a time, each with where it came from.
+- **Grows in small steps.** Users, board makers and developers add facts one at a time, each with where it came from.
 - **Useful.** Enough to generate a blinky, a pin file or an example, and to check that a design's pins fit the board.
 - **Convertible.** To and from LiteX and Amaranth board definitions, keeping everything either records about pins.
 
@@ -17,7 +17,7 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 | Decision | Why |
 | --- | --- |
 | A repo of its own, `logix-catalog`, with its own docs site; no product page, since it's the board data inside Logix Engine, not a product (2026-11-14) | Board data changes more often than engine code, and contributors shouldn't need the engine repo |
-| Open Logix's products, scripts and agents read the catalog only through Logix Engine's API; only this repo's maintenance (checker, importers, tests, CI) reads the files. For everyone else that's the intended, supported way, not enforced: the data stays free to use and copy, and reading the files directly is at one's own risk (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
+| Open Logix's products, scripts and agents read the catalog only through Logix Engine's API; only this repo's maintenance (checker, tests, CI) reads the files. For everyone else that's the intended, supported way, not enforced: the data stays free to use and copy, and reading the files directly is at one's own risk (2026-11-08) | One version of the data, custom boards read and checked the same way, the engine's derived facts in one place, and freedom to change the files' layout. The board file format stays public for writing boards |
 | One JSON file per board, named by its ID | A contribution touches one small file; boards copy between the catalog and a project's `boards/` folder as files |
 | One board schema, `logix-board-v1.json`; custom boards are folders of the same files | One format everywhere; no wrapper files |
 | One FPGA file per family, `fpgas/<family>.json`, named like the chips (`ice40`, `ecp5`, `gw1n`, `gw2a`, `gw5a`, `artix7`, `spartan7`, `zynq7000`); boards never name a family or toolchain | A family is a fact about the chip, and the file's name states it once, so fields it implies (such as yosys's Gowin family and Project X-Ray's family folder) aren't repeated per FPGA. Only the engine knows toolchains (2026-11-08) |
@@ -41,9 +41,9 @@ Not goals: describing the FPGA itself (`fpgas/` holds only what tools need), ful
 
 ## Sources and importing
 
-Every resource can say where it came from (`source`, see model.md). Kinds rank, strongest first: `hardware`, `schematic`, `maker`, `litex` and `amaranth`, `user`. Importers never overwrite a resource from a stronger source; they report the difference instead.
+Every resource can say where it came from (`source`, see model.md). Kinds rank, strongest first: `hardware`, `schematic`, `maker`, `litex` and `amaranth`, `user`. A resource from a weaker source never replaces one from a stronger source; review keeps the better-sourced value.
 
-LiteX's and Amaranth's board files cover 57 of the 81 boards (LiteX 51, Amaranth 35; checked 2026-11-08), so importing fills most resources. Both describe boards in Python, so importers are Python scripts in `tools/` (planned). The mapping:
+LiteX's and Amaranth's board files cover 57 of the 81 boards (LiteX 51, Amaranth 35; checked 2026-11-08), so they're a good place to start a board's resources. Contributors copy from them by this mapping, with `source` set to `litex` or `amaranth` (no importer program is planned; the user's decision, 2026-11-22):
 
 | LiteX or Amaranth | Our type |
 | --- | --- |
@@ -55,7 +55,7 @@ LiteX's and Amaranth's board files cover 57 of the 81 boards (LiteX 51, Amaranth
 | `serial`, `uart` with `tx`, `rx` | `uart` |
 | `pmod` connectors (12 positions) | `pmod` (the 8 signal pins) |
 
-Names the table doesn't know are reported, never guessed. LiteX rarely records LED polarity, so where only LiteX has a board, `active` stays unknown. Export, writing an Amaranth `Platform` class or LiteX `_io` and `_connectors` lists from a board's file, comes later, when someone needs it.
+Names the table doesn't know are left out, never guessed. LiteX rarely records LED polarity, so where only LiteX has a board, `active` stays unknown. Export, writing an Amaranth `Platform` class or LiteX `_io` and `_connectors` lists from a board's file, comes later, when someone needs it.
 
 ## Logix Engine and the catalog
 

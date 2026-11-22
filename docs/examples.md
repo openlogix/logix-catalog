@@ -1,46 +1,48 @@
 # Examples and boards
 
-Open points and recommendations for frontend developers: how a frontend's
-examples stay right for every board in the catalog. Nothing here is decided
-for every frontend yet; Logix IDE is to follow it first. It moved here from
-the Claude Doc "Open Logix: FPGA Tools Without Apio's Packages" (reviewed
-2026-11-10), now obsolete.
+How a frontend's examples stay right for every board in the catalog:
+recommendations for frontend developers, from what Logix IDE does (its
+`spec/examples/`, since 2026-11-09; the user's decision, 2026-11-22, to
+describe that here).
 
 Boards and FPGAs come in the `logix-catalog` package, which Logix Engine
-downloads; each frontend ships its own examples, in its own project format,
-and checks them, with no AI, against whatever catalog the engine has.
+downloads; each frontend ships its own examples, in its own project format.
 
-## The policy
+## The recommendation
 
-1. **Bare minimum and blinky are generated, not shipped:** the frontend
-   fills a per-family template from the board's data: the FPGA part; the
-   clock pin and frequency, or the internal oscillator; the LEDs with their
-   active level and any driver primitive; pin attributes such as the I/O
-   standard; pins held at a level.
-2. **Examples use board signals** (`clk`, `led0`, `btn1`), not pins; the
-   constraints are written from the board's data when the example is used.
-3. **Each example states its needs:** its signals and their assumptions
-   (direction, active level, clock frequency), the family it needs (any, or
-   one for vendor primitives), rough resources (LUTs, BRAM, PLLs) and the
-   board file format version. A board ID is only a hint.
-4. **The frontend matches the needs to the board:** compatible; compatible
-   with constraints or PLL settings regenerated; or needs an update, or
-   incompatible. A quick synthesis and placement on that board gives the
-   final answer.
-5. **CI** builds the generated blinky for every board, and checks every
-   example, on each catalog change.
+1. **Standard examples are written by an AI agent from a spec.** A small
+   set of examples every board gets (in Logix IDE: `bare-minimum`, `blinky`,
+   and `serial` and `serial-debug` on boards with a UART) is described once,
+   in plain words, in the frontend's repo. An AI agent writes each board's
+   copy from that spec and the board's entry in the catalog, read through
+   Logix Engine (`get_catalog`), including its `ai_hints`. Code generators
+   were tried first and dropped: code can't read `ai_hints`, so a generator
+   repeated their knowledge in its own code.
+2. **Only the spec and the board.** The agent never reads existing
+   examples, old versions or code that made them. When the spec and the
+   board's data aren't enough to write a correct example, the fix goes into
+   the catalog (a field, or an `ai_hints` line, see [model.md](model.md)) or
+   into the spec, never into one board's example.
+3. **Never edited by hand.** A standard example is written again, whole,
+   when its spec or its board changes. Examples a frontend writes by hand
+   for one board are kept apart and never touched by the agent.
+4. **Every example is checked on the real engine:** it builds on its board
+   with no warnings, and its testbenches pass.
+5. **The catalog an example was written from is recorded** (in Logix IDE,
+   `spec/examples/CATALOG.json`: each board's entry and the catalog
+   version), so a later run can tell which boards changed and write only
+   their examples again.
+
+## Delivery
+
+Logix IDE ships its examples as a package of its own
+(`logix-ide-examples`), named by its remote config like Logix Engine's
+packages, so a fixed or new example reaches installed copies without a new
+Logix IDE release.
 
 ## Open points
 
-- **Frontends detect a new or changed catalog** (by its version) when the
-  engine's catalog changes, re-run the match for every example, and offer
-  the generated bare minimum and blinky for new boards.
-  *Recommendation:* required for every frontend that ships examples.
-- **A daily examples package:** the frontend's CI builds its examples each
-  day against that day's catalog, so a shipped package always matches a
-  known catalog. *Recommendation:* a good addition; the check when an
-  example is used still covers users on another catalog.
-- **Examples generated offline by AI:** each records the catalog version and
-  a hash of the board fields it used; the examples build compares them with
-  the current catalog and flags or regenerates the example when they differ.
-  *Recommendation:* yes, detect it.
+- **A new catalog with changed boards** reaches users through the engine's
+  remote config before the frontend's examples are written again for it. A
+  frontend can compare the catalog version it wrote its examples from with
+  the engine's, and say so when they differ.
