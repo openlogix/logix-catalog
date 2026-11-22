@@ -122,7 +122,7 @@ A board's file lists what is known and leaves the rest unknown: a type with no r
 
 ## Disagreements
 
-The file holds one value per resource, with its source, never a list of reports. When a pull request brings a different value, review keeps the better-sourced one, and git keeps the history. Importers never overwrite a resource from a stronger source; they report the difference.
+The file holds one value per resource, with its source, never a list of reports. When a pull request brings a different value, review keeps the better-sourced one, and git keeps the history. A resource from a weaker source never replaces one from a stronger source.
 
 ## Not decided yet
 
