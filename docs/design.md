@@ -76,15 +76,19 @@ downloads the catalog as a package, as it downloads its tools (decided
   [openlogix/logix-core](https://github.com/openlogix/logix-core)) download.
 - **The engine's remote config names one catalog release**, as it names
   `logix-core`: `remote-config/logix-engine/<version>/` in the engine's
-  repo, one file per channel (`prod.jsonc`, what users get; `dev.jsonc`,
-  when development needs another). The engine checks the download against
+  repo: `assign.jsonc` says which engine releases are on which channel,
+  and each channel has its own config file, `<channel>-channel.jsonc`
+  (`prod-channel.jsonc`, what users get; `dev-channel.jsonc`, when
+  development needs another). The engine checks the download against
   the release's `SHA256SUMS`. A new catalog reaches engines already on
   users' machines by a pull request to that config, with no engine
-  release; a prod config names only stable releases, tested with the
-  engine first. `get_engine_info` reports the catalog's version, and
+  release. The prod config names only stable releases, tested with the
+  engine first; a dev config may name pre-releases, or `newest`, the
+  newest pre-release. `get_engine_info` reports the catalog's version, and
   frontends show it, such as in Logix IDE's System Info.
 - **The engine reads the catalog only from the downloaded package**; it has
-  none built in. Until its first catalog arrives, board lists are empty.
+  none built in. A tool that reads boards downloads it first when it's
+  missing.
 - **Custom boards:** requests name a folder of board files
   (`custom_boards_folder`), read with the same code as the catalog.
 - The engine keeps the code that reads and checks the catalog.

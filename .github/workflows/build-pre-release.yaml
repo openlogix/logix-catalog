@@ -6,8 +6,8 @@
 #
 # Runs on every push to main, daily and manually, like every Open Logix
 # pre-release build. Old pre-releases are deleted by the shared policy;
-# an engine release that ships pins a stable release (pre-release
-# unticked), which is never deleted.
+# the engine's prod remote config names only stable releases (pre-release
+# unticked), which are never deleted.
 #
 # The shared parts are Open Logix actions in openlogix/.github (tested
 # there): start-pre-release and publish-pre-release, which also writes the
@@ -83,6 +83,6 @@ jobs:
           links: "[Docs](https://www.openlogix.org/logix-catalog/) · [GitHub](https://github.com/openlogix/logix-catalog)"
           engine-note: catalog
           content-file: CONTENT.md
-          about-bullets: An engine release that ships pins a stable release, which is never deleted.
+          about-bullets: The engine's prod remote config names only stable releases, which are never deleted.
           files: |
             _out/logix-catalog-${{ env.PACKAGE_TAG }}.tgz
