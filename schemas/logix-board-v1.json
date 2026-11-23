@@ -441,7 +441,7 @@
     },
     "Header": {
       "type": "object",
-      "description": "Any other header: every position in order, null for power and ground.",
+      "description": "Any other header: every position in order, null for one not wired to an FPGA pin (power, ground, or a part on the board).",
       "properties": {
         "type": {
           "const": "header"
