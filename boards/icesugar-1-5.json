@@ -44,7 +44,7 @@
       "pins": ["18", "19", "20", "21"],
       "active": "low",
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "A 4-way DIP switch with pull-ups, S1 to S4 on pins 18 to 21 through PMOD4's jumpers."
+      "user_notes": "A 4-way DIP switch with pull-ups, S1 to S4 on pins 18 to 21, the same pins as PMOD4."
     },
     "uart": {
       "type": "uart",
@@ -76,7 +76,13 @@
         "kind": "hardware",
         "ref": "Pin test on a real iCESugar v1.5, 2026-11-22; MuseLab's iCESugar v1.5 pinout"
       },
-      "user_notes": "A 2x6 header. One row: 3.3 V, GND, pins 18 to 21. The other: 3.3 V, GND, DIP switches S1 to S4. Its 4 jumpers, fitted as shipped, connect each pin to its switch: remove them to use the pins freely."
+      "user_notes": "A 2x6 header. One row: 3.3 V, GND, pins 18 to 21. The other: 3.3 V, GND, DIP switches S1 to S4.",
+      "requires": [
+        {
+          "type": "setup",
+          "text": "Remove PMOD4's 4 jumpers: as shipped, they connect pins 18 to 21 to DIP switches S1 to S4."
+        }
+      ]
     },
     "unclassified": {
       "type": "unclassified",
