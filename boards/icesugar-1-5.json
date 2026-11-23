@@ -71,16 +71,16 @@
     },
     "pmod4": {
       "type": "header",
-      "pins": [null, null, "18", "19", "20", "21"],
+      "pins": ["21", "20", "19", "18", null, null, null, null, null, null, null, null],
       "source": {
         "kind": "hardware",
-        "ref": "Pin test on a real iCESugar v1.5, 2026-11-22; MuseLab's iCESugar v1.5 pinout"
+        "ref": "Pin test on a real iCESugar v1.5, 2026-11-22; MuseLab's iCESugar v1.5 pinout; github.com/wuxx/icesugar src/common/io.pcf"
       },
-      "user_notes": "A 2x6 header. One row: 3.3 V, GND, pins 18 to 21. The other: 3.3 V, GND, DIP switches S1 to S4.",
+      "user_notes": "A 12-pin PMOD-style header (2x6), in PMOD numbering. 1 to 6: pins 21, 20, 19, 18, GND, 3.3 V. 7 to 12: DIP switches S4 to S1, GND, 3.3 V.",
       "requires": [
         {
           "type": "setup",
-          "text": "Remove PMOD4's 4 jumpers: as shipped, they connect pins 18 to 21 to DIP switches S1 to S4."
+          "text": "Remove PMOD4's 4 jumpers: as shipped, they connect positions 1 to 4 (pins 21 to 18) to the DIP switches."
         }
       ]
     },

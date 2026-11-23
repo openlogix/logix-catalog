@@ -64,7 +64,7 @@ The order of resources in the map means nothing, as JSON objects are unordered: 
 | `switches` | `pins`, `active` | like buttons |
 | `uart` | `tx`, `rx`, optional `rts`, `cts` (`tx` is the FPGA's output), optional `usb_interface` (see below) | `"uart": {"type": "uart", "tx": "9", "rx": "6"}` |
 | `pmod` | `pins`: the 8 signal pins in header order, 1 to 4 then 7 to 10 | `"pmod1a": {"type": "pmod", "pins": ["4", "2", "47", "45", "3", "48", "46", "44"]}` |
-| `header` | `pins`: every position in order, `null` for power and ground | headers that aren't PMODs |
+| `header` | `pins`: every position in order, `null` for one not wired to an FPGA pin (power, ground, or a part on the board) | headers that aren't PMODs |
 | `unclassified` | `pins`: every FPGA pin the board wires to something no other resource describes | see Partial knowledge |
 
 Every resource may also have:
