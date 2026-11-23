@@ -24,12 +24,15 @@
     "rgb_led": {
       "type": "rgb_led",
       "red": "40",
-      "green": "41",
-      "blue": "39",
+      "green": "39",
+      "blue": "41",
       "active": "low",
-      "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
+      "source": {"kind": "hardware", "ref": "Pin test on a real iCESugar v1.5, 2026-11-22"},
+      "user_notes": "Checked on a real board: green and blue are swapped from the schematic. If blinky lights blue instead of green, your board follows the schematic: please report it.",
       "ai_hints": [
-        "Wired to the FPGA's RGB LED driver pads: red RGB1, green RGB2, blue RGB0.",
+        "Wired to the FPGA's RGB LED driver pads: red RGB1, green RGB0, blue RGB2.",
+        "Green and blue are swapped from the schematic, which shows blue on 39 and green on 41.",
+        "The LED part's pin order differs, not the wiring: other boards may follow the schematic.",
         "Drive it through SB_RGBA_DRV, the iCE40 UltraPlus's RGB LED driver cell (sink only)."
       ]
     },
@@ -38,7 +41,7 @@
       "pins": ["18", "19", "20", "21"],
       "active": "low",
       "source": {"kind": "schematic", "ref": "github.com/wuxx/icesugar schematic/iCESugar-v1.5.pdf"},
-      "user_notes": "A 4-way DIP switch with pull-ups, on the same pins as PMOD4."
+      "user_notes": "A 4-way DIP switch with pull-ups, S1 to S4 on pins 18 to 21 through PMOD4's jumpers."
     },
     "uart": {
       "type": "uart",
@@ -65,9 +68,12 @@
     },
     "pmod4": {
       "type": "header",
-      "pins": ["21", "20", "19", "18", null, null],
-      "source": {"kind": "maker", "ref": "github.com/wuxx/icesugar src/common/io.pcf"},
-      "user_notes": "A 6-pin PMOD: 4 signals, then GND and 3.3 V. Shared with the DIP switches: turn them off to use it."
+      "pins": [null, null, "18", "19", "20", "21"],
+      "source": {
+        "kind": "hardware",
+        "ref": "Pin test on a real iCESugar v1.5, 2026-11-22; MuseLab's iCESugar v1.5 pinout"
+      },
+      "user_notes": "A 2x6 header. One row: 3.3 V, GND, pins 18 to 21. The other: 3.3 V, GND, DIP switches S1 to S4. Its 4 jumpers, fitted as shipped, connect each pin to its switch: remove them to use the pins freely."
     },
     "unclassified": {
       "type": "unclassified",
