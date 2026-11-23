@@ -126,6 +126,28 @@ def resource_pins(r):
                 out.append((f"{field}/{i}", p))
     for color, p in r.get("colors", {}).items():
         out.append((f"colors/{color}", p))
+    for pid, pos in r.get("positions", {}).items():
+        if "pin" in pos:
+            out.append((f"positions/{pid}/pin", pos["pin"]))
+    return out
+
+
+def grid_problems(name, r):
+    """A header's grid: every position once, no unknown IDs, rows of one length."""
+    out = []
+    grid = r.get("grid")
+    if grid is None:
+        return out
+    at = f"resources/{name}/grid"
+    ids = [i for row in grid for i in row if i is not None]
+    for i in sorted({i for i in ids if ids.count(i) > 1}):
+        out.append((at, f"Position {i} is in the grid twice."))
+    for i in sorted(set(ids) - set(r["positions"])):
+        out.append((at, f"Position {i} isn't in positions."))
+    for i in sorted(set(r["positions"]) - set(ids)):
+        out.append((at, f"Position {i} isn't in the grid."))
+    if len({len(row) for row in grid}) > 1:
+        out.append((at, "Its rows have different lengths."))
     return out
 
 
@@ -154,6 +176,7 @@ def board_problems(board, fpgas):
         dup = {p for _, p in pins if [q for _, q in pins].count(p) > 1}
         for p in sorted(dup):
             out.append((f"resources/{name}", f"Pin {p} is in this resource twice."))
+        out += grid_problems(name, r)
         std = r.get("io_standard")
         if std is not None and family is not None and std not in io_standards(family):
             allowed = ", ".join(sorted(io_standards(family))) or "none"

@@ -88,6 +88,51 @@ class Catalog(unittest.TestCase):
         b["variants"].insert(0, ram)
         self.assertEqual(problems(b)[0][0], "variants/0")
 
+    def test_headers(self):
+        header = {
+            "type": "header",
+            "positions": {
+                "1": {"pin": "2"},
+                "2": {"power": "GND"},
+                "3": {"power": "3.3V"},
+                "4": {"net": "S1"},
+                "5": {"unconnected": True},
+                "6": {"unknown": True},
+            },
+            "grid": [["1", "2", "3"], ["6", "5", "4"]],
+        }
+        b = copy.deepcopy(GOOD)
+        b["resources"]["h"] = header
+        self.assertEqual(problems(b), [])
+        for change in [
+            lambda h: h["positions"].update({"7": {"pin": "3", "power": "GND"}}),
+            lambda h: h["positions"].update({"7": {"power": "3V3"}}),
+            lambda h: h["positions"].update({"7": {"unconnected": False}}),
+            lambda h: h["positions"].update({"7": None}),
+            lambda h: h["positions"].update({"7 a": {"unknown": True}}),
+            lambda h: h.update(positions={}),
+            lambda h: h.update(pins=["2"]),
+        ]:
+            b = copy.deepcopy(GOOD)
+            b["resources"]["h"] = copy.deepcopy(header)
+            change(b["resources"]["h"])
+            self.assertTrue(problems(b), b["resources"]["h"])
+        b = copy.deepcopy(GOOD)
+        b["resources"]["h"] = copy.deepcopy(header)
+        b["resources"]["h"]["positions"]["2"] = {"pin": "2"}
+        self.assertEqual(problems(b), [("resources/h", "Pin 2 is in this resource twice.")])
+        b["resources"]["h"] = copy.deepcopy(header)
+        b["resources"]["h"]["grid"] = [["1", "2", "9"], ["6", "5", "1"], ["4", None]]
+        self.assertEqual(
+            problems(b),
+            [
+                ("resources/h/grid", "Position 1 is in the grid twice."),
+                ("resources/h/grid", "Position 9 isn't in positions."),
+                ("resources/h/grid", "Position 3 isn't in the grid."),
+                ("resources/h/grid", "Its rows have different lengths."),
+            ],
+        )
+
     def test_requirements(self):
         drive = {"type": "drive", "name": "en", "pins": ["2"], "level": "high", "why": "Turns the LEDs on."}
         setup = {"type": "setup", "text": "Close jumper J1."}

@@ -52,7 +52,7 @@ When a board has a variant that writes flash, the first variant writes flash.
 
 `resources` maps each name to a resource. The name is the port name a design uses, a Verilog identifier, so it's unique on the board. One pin gives a plain port and several a vector, bit 0 first: a one-LED board's `led` gives `output led`, an eight-LED board's `leds` gives `output [7:0] leds`.
 
-The order of resources in the map means nothing, as JSON objects are unordered: tools may keep or change it. Tools that pick a resource, such as a generator choosing a board's clock, decide by explicit rules, never by position. Order within a resource does mean something: `pins` lists are bit 0 first, or in header order.
+The order of resources in the map means nothing, as JSON objects are unordered: tools may keep or change it. Tools that pick a resource, such as a generator choosing a board's clock, decide by explicit rules, never by position. Order within a resource does mean something: `pins` lists are bit 0 first, or in header order (a PMOD's).
 
 | Type | Fields | Example |
 | --- | --- | --- |
@@ -64,8 +64,40 @@ The order of resources in the map means nothing, as JSON objects are unordered: 
 | `switches` | `pins`, `active` | like buttons |
 | `uart` | `tx`, `rx`, optional `rts`, `cts` (`tx` is the FPGA's output), optional `usb_interface` (see below) | `"uart": {"type": "uart", "tx": "9", "rx": "6"}` |
 | `pmod` | `pins`: the 8 signal pins in header order, 1 to 4 then 7 to 10 | `"pmod1a": {"type": "pmod", "pins": ["4", "2", "47", "45", "3", "48", "46", "44"]}` |
-| `header` | `pins`: every position in order, `null` for one not wired to an FPGA pin (power, ground, or a part on the board) | headers that aren't PMODs |
+| `header` | `positions`: what each position is wired to, by its ID; optional `grid` (see Headers) | headers that aren't PMODs |
 | `unclassified` | `pins`: every FPGA pin the board wires to something no other resource describes | see Partial knowledge |
+
+
+### Headers
+
+A `header` describes a connector that isn't a standard PMOD: where each FPGA pin is on it, and what its other positions are. It isn't a design port: designers pick its pins and name their own ports.
+
+`positions` maps each position's ID, as the board or its schematic marks it (`1`, `1a`, `A10`; letters, digits, `-` and `_`), to exactly one of:
+
+| Form | Means |
+| --- | --- |
+| `{"pin": "28"}` | an FPGA pin |
+| `{"power": "3.3V"}` | a supply or ground: `GND`, `VIN` or a voltage such as `3.3V` or `5V` |
+| `{"net": "S1"}` | anything else on the board, named as its schematic names it |
+| `{"unconnected": true}` | wired to nothing |
+| `{"unknown": true}` | not known yet |
+
+A position to keep clear of, such as one wired to the FPGA's configuration, is a `net`, with the warning in `user_notes`. The map has no order: tools show positions in natural ID order (`2` before `10`, `1a` before `1b`).
+
+`grid`, optional, is how the positions are arranged, when the IDs don't make it clear: rows of IDs as seen from the component side, with the board edge nearest the header at the bottom, rows from that edge inward and each left to right; `null` for a gap. Every position is in it once, and its rows are of one length. The iCESugar v1.5's PMOD4, numbered like an IC:
+
+```json
+"pmod4": {
+  "type": "header",
+  "positions": {
+    "1": {"power": "3.3V"}, "2": {"power": "GND"},
+    "3": {"net": "S1"}, "4": {"net": "S2"}, "5": {"net": "S3"}, "6": {"net": "S4"},
+    "7": {"pin": "21"}, "8": {"pin": "20"}, "9": {"pin": "19"}, "10": {"pin": "18"},
+    "11": {"power": "GND"}, "12": {"power": "3.3V"}
+  },
+  "grid": [["1", "2", "3", "4", "5", "6"], ["12", "11", "10", "9", "8", "7"]]
+}
+```
 
 Every resource may also have:
 
