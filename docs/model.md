@@ -67,6 +67,8 @@ The order of resources in the map means nothing, as JSON objects are unordered: 
 | `header` | `positions`: what each position is wired to, by its ID; optional `grid` (see Headers) | headers that aren't PMODs |
 | `unclassified` | `pins`: every FPGA pin the board wires to something no other resource describes | see Partial knowledge |
 
+**Addressable LEDs aren't `rgb_led`.** An `rgb_led` is three LEDs in one package, a pin each, lit by the pin's level. An addressable LED (WS2812, SK6812, "NeoPixel" and the like) has one data pin and its own controller: the FPGA sends it colors over a timed serial protocol, often to several LEDs in a chain. So it's a different type, which doesn't exist yet: no board here lists one (2026-11-24). Until it does, a board's addressable LED is an `unclassified` pin, with a `user_notes` line saying what it is, never an `rgb_led` (designs for an `rgb_led`, such as Logix IDE's `rgb-fade` example, would drive it wrongly).
+
 
 ### Headers
 
