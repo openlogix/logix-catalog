@@ -21,18 +21,20 @@ theme:
   # The Logix Catalog icon from the Open Logix brand (openlogix.github.io docs/brand/catalog.svg).
   logo: assets/logix-catalog.svg
   favicon: assets/logix-catalog.svg
+  # Logix Catalog's brown (the brand icon's hue, the website repo's CLAUDE.md,
+  # Brand identity; red until 2026-11-26), set in docs/stylesheets/extra.css.
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: red
-      accent: red
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: red
-      accent: red
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Light mode

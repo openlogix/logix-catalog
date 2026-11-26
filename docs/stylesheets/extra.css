@@ -26,3 +26,19 @@
 [data-md-color-scheme="slate"] .md-typeset h3 {
   color: var(--md-primary-fg-color--light);
 }
+
+/* Logix Catalog's colors (mkdocs.yml's palette is "custom"): the brown of
+   its brand icon, docs/assets/logix-catalog.svg. */
+:root > * {
+  --md-primary-fg-color: #7a5230;
+  --md-primary-fg-color--light: #c9a27e;
+  --md-primary-fg-color--dark: #5b3a1e;
+  --md-accent-fg-color: #a47148;
+  --md-accent-fg-color--transparent: #a471481a;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-typeset-a-color: #c9a27e;
+  --md-accent-fg-color: #d2b08c;
+  --md-accent-fg-color--transparent: #d2b08c1a;
+}
