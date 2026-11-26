@@ -23,7 +23,11 @@
       "usb_interface": 1,
       "io_standard": "LVCMOS33",
       "source": {"kind": "maker", "ref": "github.com/sipeed/TangNano-9K-example uart/src/top.cst"},
-      "user_notes": "The on-board BL702's second channel, USB interface 1, over the USB-C cable: computers list two serial ports for the board, and this is the one for interface 1 (interface 0 programs the board)."
+      "user_notes": "The on-board BL702's second channel, USB interface 1, over the USB-C cable: computers list two serial ports for the board, and this is the one for interface 1 (interface 0 programs the board). On macOS it runs at 9600 baud whatever speed the computer asks for, so designs that use it at 9600 work everywhere.",
+      "ai_hints": [
+        "Use 9600 baud for this UART, in the design and the host's serial settings.",
+        "On macOS the BL702 stays at 9600 whatever speed is asked: other speeds give garbage."
+      ]
     }
   }
 }
