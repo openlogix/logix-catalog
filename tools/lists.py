@@ -39,7 +39,8 @@ CONNECTIONS = {
 }
 MEMORIES = {"flash": "flash", "ram": "RAM"}
 
-IDE_OWN_BOARDS = "https://www.openlogix.org/logix-ide/using-logix/#your-own-boards"
+IDE_OWN_BOARDS = "https://www.openlogix.org/logix-ide/custom-boards/"
+ENGINE_OWN_BOARDS = "https://www.openlogix.org/logix-engine/custom-boards/"
 CONTRIBUTE = "https://github.com/openlogix/logix-catalog/pulls"
 
 
@@ -124,7 +125,7 @@ def boards_page(root=ROOT):
         "> [!TIP]",
         "> **Your board isn't here? Add your own.** Describe it in one file, in the catalog's "
         f"[board format](model.md), and your tool uses it like a supported board, with any of the "
-        f"[supported FPGAs](fpgas.md). In Logix IDE, see [Your own boards]({IDE_OWN_BOARDS}). "
+        f"[supported FPGAs](fpgas.md). See [Logix IDE]({IDE_OWN_BOARDS})'s or [Logix Engine]({ENGINE_OWN_BOARDS})'s Custom boards page. "
         f"To add it to the catalog for everyone, send the file as a [pull request]({CONTRIBUTE}).",
         "",
         "This list follows the catalog's newest version: a board added recently reaches Open Logix "
