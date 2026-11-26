@@ -14,6 +14,15 @@
   ],
   "resources": {
     "sys_clk": {"type": "clock", "pin": "4", "mhz": 27, "io_standard": "LVCMOS33"},
-    "led": {"type": "leds", "pins": ["15"], "active": "low", "io_standard": "LVCMOS33"}
+    "led": {"type": "leds", "pins": ["15"], "active": "low", "io_standard": "LVCMOS33"},
+    "uart": {
+      "type": "uart",
+      "tx": "69",
+      "rx": "70",
+      "usb_interface": 1,
+      "io_standard": "LVCMOS33",
+      "source": {"kind": "maker", "ref": "github.com/sipeed/TangNano-20K-example uart/src/top.cst"},
+      "user_notes": "The on-board BL616's second channel, USB interface 1, over the USB-C cable: computers list two serial ports for the board, and this is the one for interface 1 (interface 0 programs the board)."
+    }
   }
 }
