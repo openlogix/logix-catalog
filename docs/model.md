@@ -111,6 +111,8 @@ Every resource may also have:
 
 A `uart` wired to the board's own USB chip, the serial port a computer sees over the board's USB cable, may have `usb_interface`: the USB interface that carries it on the board's USB device (the one its variants' `usb` filters match), such as `1` for an FTDI chip's second channel, whose first programs the board (decided 2026-11-19, for the Serial Monitor). With it, Logix Engine finds the board's serial port by itself, even when the computer lists several for the board. Left out when the chip has a single serial port (the engine then takes the only one) or when it isn't known; a UART on a header, with no USB chip, has none. Its `user_notes` still say, for people, which port it is.
 
+**For the debugger.** Logix Engine's in-design debugger talks to the design over a UART, and finds it in the board's file: a `uart` resource named `uart` (debug files name it, `uplink = { kind = "uart", resource = "uart" }`, and Logix IDE's Debug writes that by default), wired to the board's own USB serial bridge, with `usb_interface` when the bridge's chip has several, and the board's `clock` with its `mhz`. A board without them can still be debugged with a USB serial adapter on two free pins, so neither is required; adding a bridge's `uart` saves users that. When the bridge only works at a slow rate (below 115200 baud), the resource's `ai_hints` say so. Logix Engine's [debugger docs](https://www.openlogix.org/logix-engine/debugger/) (Boards) list which boards have them.
+
 `active` is `high` or `low`; left out, it's unknown. An LED in a `led_matrix` lights when its pin and a color's pin are both active.
 
 ## Requirements

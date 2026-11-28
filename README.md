@@ -40,7 +40,7 @@ The board file format stays stable for writing boards: your own boards and contr
 ## Adding or fixing a board
 
 1. Copy a similar board's file to `boards/<new-id>.json`, or edit the board's file.
-2. Fill in what you know; leave out what you don't. Say where a fact comes from with `source` (see [the model](docs/model.md)).
+2. Fill in what you know; leave out what you don't. Say where a fact comes from with `source` (see [the model](docs/model.md)). A board with a USB serial bridge to the FPGA should have its `uart` resource, which the Serial Monitor and Logix Engine's debugger use (see the model, Resources).
 3. Run `scripts/test.sh` (Python 3). It checks every board and formats files the canonical way with `tools/check.py --fix`.
 4. Open a pull request.
 
