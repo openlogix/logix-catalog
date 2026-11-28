@@ -42,7 +42,9 @@ The board file format stays stable for writing boards: your own boards and contr
 1. Copy a similar board's file to `boards/<new-id>.json`, or edit the
    board's file.
 2. Fill in what you know; leave out what you don't. Say where a fact comes
-   from with `source` (see the [board model](model.md)).
+   from with `source` (see the [board model](model.md)). A board with a USB
+   serial bridge to the FPGA should have its `uart` resource, which the
+   Serial Monitor and Logix Engine's debugger use (see the model, Resources).
 3. Run `scripts/test.sh` (Python 3). It checks every board and formats
    files the canonical way with `tools/check.py --fix`.
 4. Open a [pull request](https://github.com/openlogix/logix-catalog/pulls).
